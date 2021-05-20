@@ -1,0 +1,20 @@
+{
+  "name": "akahu-matata",
+  "version": "1.0.0",
+  "description": "It means no worries.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "got": "^11.8.2"
+  },
+  "devDependencies": {
+    "@types/got": "^9.6.11",
+    "@types/mocha": "^8.2.2",
+    "mocha": "^8.4.0",
+    "ts-node": "^9.1.1"
+  }
+}
