@@ -10,7 +10,7 @@ Do NOT check it into git.
 
 ```bash
 AKAHU_APP_TOKEN={your app token}
-AKAHU_APP_SECRET={your user token}
+AKAHU_USER_TOKEN={your user token}
 BASE_URL=https://api.akahu.io/v1/
 ```
 
@@ -19,5 +19,8 @@ BASE_URL=https://api.akahu.io/v1/
 * ~~TS or PY?~~ Both. start with ts
 * ~~where you putting the hidden stuff?~~ Docker secrets are ideal
 * ~~what request lib?~~ got
-* first request.
-
+* ~~first request~~
+* add your acct
+* get some stuff
+* add CT account
+* get K-S
