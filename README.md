@@ -4,11 +4,14 @@ It means no worries.
 
 ## Notes
 
-* you need to create a secrets.env file with the following:
+Create a file called `.env` in your project root dir with the following.
+
+Do NOT check it into git.
 
 ```bash
 AKAHU_APP_TOKEN={your app token}
 AKAHU_APP_SECRET={your user token}
+BASE_URL=https://api.akahu.io/v1/
 ```
 
 ## TODO
