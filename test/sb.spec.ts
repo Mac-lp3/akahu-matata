@@ -1,43 +1,54 @@
-import got from 'got';
-import * as http from 'http';
+// import got from 'got';
+// import * as http from 'http';
 
-const defaultHeaders: any = {};
-defaultHeaders['Authorization'] = `Bearer ${process.env.AKAHU_USER_TOKEN}`
-defaultHeaders['X-Akahu-ID'] = `${process.env.AKAHU_APP_TOKEN}`
+// const defaultHeaders: any = {};
+// defaultHeaders['Authorization'] = `Bearer ${process.env.AKAHU_USER_TOKEN}`
+// defaultHeaders['X-Akahu-ID'] = `${process.env.AKAHU_APP_TOKEN}`
 
-describe('something', function() {
+// describe('something', function() {
 
-    it('can get ME', async function() {
+//     it('can get ME', async function() {
 
-        try {
+//         try {
 
-            const r = await got(`${process.env.BASE_URL}/me`, { 
-                headers: defaultHeaders
-            });
+//             const r = await got(`${process.env.BASE_URL}/me`, { 
+//                 headers: defaultHeaders
+//             });
 
-            console.log(r.statusCode);
-            console.log(JSON.parse(r.body));
+//             console.log(r.statusCode);
 
-        } catch (ex) {
-            console.log(ex);
-        }
-    })
+//         } catch (ex) {
+//             console.log(ex);
+//         }
+//     })
 
-    it('lists categories', async function() {
+//     it('lists accounts', async function() {
 
-        let r = await got('https://api.akahu.io/v1/categories', { 
-            headers: defaultHeaders
-        });
+//         // ks
+//         let r = await got('https://api.akahu.io/v1/accounts/acc_ckowfn0di000009k08gysaept', { 
+//             headers: defaultHeaders
+//         });
 
-        console.log(r.statusCode);
-        console.log(JSON.parse(r.body));
+//         console.log(r.statusCode);
+//         console.dir(JSON.parse(r.body));
 
-        r = await got('https://api.akahu.io/v1/categories/category_ck3dmv1ir000001qkexzn5kw7', { 
-            headers: defaultHeaders
-        });
+//         //ANZ
+//         r = await got('https://api.akahu.io/v1/accounts/acc_ckowf6tae000008mi7uto05nu', { 
+//             headers: defaultHeaders
+//         });
 
-        console.log(r.statusCode);
-        console.log(JSON.parse(r.body));
-    })
+//         console.log(r.statusCode);
+//         console.dir(JSON.parse(r.body));
 
-})
+//     })
+
+//     it('transacts', async function () {
+//         let r = await got('https://api.akahu.io/v1/transactions', { 
+//             headers: defaultHeaders
+//         });
+
+//         console.log(r.statusCode);
+//         console.dir(JSON.parse(r.body)[0]);
+//     })
+
+// })
