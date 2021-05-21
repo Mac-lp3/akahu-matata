@@ -1,4 +1,4 @@
-import { plan, insAndOuts } from '../src/core/buildPlan';
+import { plan, insAndOuts, buildTransferPlan } from '../src/core/buildPlan';
 import { AccountConfig } from '../src/types';
 
 const testOne: AccountConfig[] = [{
@@ -70,19 +70,19 @@ describe('core logic', function() {
     
     it('ins and outs', function() {
 
-        const pos = insAndOuts(testOne);
+        const pos = insAndOuts(testDeepNeed);
 
         console.log(pos);
     })
 
-    it('solves shallow need', function() {
-        const xfrs = plan(testOne)
+    // it('solves shallow need', function() {
+    //     const xfrs = plan(testOne)
 
-        console.log(xfrs)
-    })
+    //     console.log(xfrs)
+    // })
 
     it('solves deep need', function() {
-        const xfrs = plan(testDeepNeed)
+        const xfrs = buildTransferPlan(testDeepNeed)
 
         console.log(xfrs)
     })
