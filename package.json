@@ -13,8 +13,10 @@
     "got": "^11.8.2"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.18",
     "@types/got": "^9.6.11",
     "@types/mocha": "^8.2.2",
+    "chai": "^4.3.4",
     "mocha": "^8.4.0",
     "ts-node": "^9.1.1"
   }
