@@ -27,6 +27,7 @@ interface CascadeConf {
     // t1->t2, t3->t2, t4->t2
     // t1->t4, t3->t4
 
+// TODO better name
 export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf) {
 
     const transferPairs: any[] = [];
@@ -40,7 +41,13 @@ export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf)
 
         for(let j = 0; j < from.length; ++j) {
 
-            // TODO check tiers
+
+            if (conf.upOnly) {
+                // only allow sideways & upward movement
+                if (from[j] > to[i]) {
+                    continue;
+                }
+            }
 
             if (to[i].amount <= from[j].amount) {
 
@@ -103,7 +110,6 @@ export function cascade(holdings: AccountRequests) {
 
     if (holdings.excess.total > 0) {
         
-        // TODO e -> b should only go up
         transfers.push(cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.BETWEEN, upOnly: true}))
 
         if (holdings.excess.total > 0 && holdings.reserve.total > 0) {
