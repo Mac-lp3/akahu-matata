@@ -1,17 +1,38 @@
 import { AccountConfig, AccountState } from './accounts';
 
-export enum TransferDirection {
+export enum RequestDirection {
     IN = 'IN',
     OUT = 'OUT',
     HOLD = 'HOLD'
 }
 
+interface RequestSummary {
+    requests: Request[],
+    total: number;
+}
+
+// input/return the same object for re-position?
+export interface AccountRequests {
+    under: RequestSummary,
+    between: RequestSummary,
+    excess: RequestSummary,
+    reserve: RequestSummary
+}
+
+// these values must match the fields in the AccountHoldings interface
+export enum HoldingClass {
+    UNDER = 'under',
+    BETWEEN = 'between',
+    EXCESS = 'excess',
+    RESERVE = 'reserve'
+}
+
 export interface AccountPositions {
-    inNeed: TransferHalf[];
+    inNeed: Request[];
     totalNeed: number;
-    inExcess: TransferHalf[];
+    inExcess: Request[];
     totalExcess: number;
-    between: TransferHalf[];
+    between: Request[];
     totalBetween: number;
 }
 
@@ -22,8 +43,8 @@ export interface Transfer {
 }
 
 export interface TransferDef {
-    in: TransferHalf;
-    out: TransferHalf;
+    in: Request;
+    out: Request;
     from: string;
     fromFier: number;
     to: string;
@@ -31,13 +52,14 @@ export interface TransferDef {
     amount: number;
 }
 
-export interface TransferHalf {
-    direction: TransferDirection;
+export interface Request {
+    direction: RequestDirection;
     account: AccountConfig;
     amount: number;
 }
 
 export interface TransferPlan {
+    requests: AccountRequests;
     orderedTransfers: TransferDef[];
 }
 

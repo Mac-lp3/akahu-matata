@@ -1,20 +1,210 @@
-import { AccountConfig, AccountPositions, TransferHalf, Transfer, TransferDirection } from '../types';
+import { AccountRequests, HoldingClass, AccountConfig, AccountPositions, Request, Transfer, RequestDirection } from '../types';
 
 interface CascadeConf {
     from: string;
     to: string;
 }
 
+export function buildTransferPlan(accounts: AccountConfig[]) {
+
+    const positions: AccountPositions = insAndOuts(accounts);
+    let outs: Request[] = positions.inExcess; // TODO dynamic
+    let ins: Request[] = positions.inNeed;    // TODO dynamic
+
+    const transfers: Transfer[] = [];
+    let remainingNeed = positions.totalNeed;
+    let remainingGreed = positions.totalExcess;
+
+    let newPosition = cascade(positions, { from: 'Excess', to: 'Need' });
+    if (newPosition.remainingNeed > 0) {
+        newPosition = cascade(positions, { from: 'reserve', to: 'Need' });
+    }
+
+    // TODO repeate for each 
+    return newPosition;
+
+}
+
+
+// ins = under, outs = excess
+// more under?
+    // ins = under, outs = between
+    // more needed? 
+        // ins = under, outs = reserve
+        // done
+// more excess?
+    // ins = between, outs = excess
+    // more excess?
+        // ins = reserve, outs = excess
+//done
+
+// for each under:
+
+    // any excess in same or lower tier?
+        // create transfers
+    // any betweens in same or lower tier?
+        // create transfers
+    // any reserves in this tier?
+        // create transfers
+    // enough?
+        // repeate for t++
+
+
+// excess goes any direction. Favor: up, side, down
+// between goes side or down. favor down, then side
+
+export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf) {
+
+    const transferPairs: any[] = [];
+
+    const to: Request[] = (accountRequests as any)[`${conf.to}`].requests;
+    const from: Request[] = (accountRequests as any)[`${conf.from}`].requests;
+    let remainingTo: number = (accountRequests as any)[`${conf.to}`].total;
+    let remainingFrom: number = (accountRequests as any)[`${conf.from}`].total;
+
+    let tempAmount: number;
+    for (let i = 0; i < to.length; ++i) {
+
+        for(let j = 0; j < from.length; ++j) {
+
+            if (to[i].amount <= from[j].amount) {
+
+                transferPairs.push({
+                    from: from[i].account,
+                    to: to[i].account,
+                    amount: to[i].amount
+                });
+
+                remainingTo -= to[i].amount;
+                remainingFrom -= to[i].amount;
+                from[j].amount -= to[i].amount;
+                to[i].amount = 0;
+                break;
+
+            } else {
+                
+                transferPairs.push({
+                    from: from[i].account,
+                    to: to[i].account,
+                    amount: from[i].amount
+                });
+                
+                remainingTo -= from[i].amount;
+                remainingFrom -= from[i].amount;
+                to[j].amount -= from[i].amount;
+                from[i].amount = 0;
+            }
+
+        }
+    }
+
+    (accountRequests as any)[`${conf.to}`].total = remainingTo;
+    (accountRequests as any)[`${conf.from}`].total = remainingFrom;
+
+    return transferPairs;
+}
+
+export function cascadeUnder(holdings: AccountRequests) {
+
+    let transfers: any[] = [];
+
+    if (holdings.under.total > 0) {
+
+        if(holdings.excess.total > 0) {
+
+            // TODO use the enums
+            transfers.push(cascadeFrom(holdings, {from: 'excess', to: 'under'}))
+        }
+
+        // check if still under?
+        if(holdings.under.total > 0 && holdings.between.total > 0) {
+
+            // TODO use the enums
+            transfers.push(cascadeFrom(holdings, {from: 'between', to: 'under'}))
+        }
+
+        if (holdings.under.total > 0 && holdings.reserve.total > 0) {
+
+            // TODO use the enums
+            transfers.push(cascadeFrom(holdings, {from: 'reserve', to: 'under'}))
+        }
+
+
+        // // for each tier starting w/ current
+        // let amountNeeded = holdings.under.requests[0].amount;
+        // let currentTier = holdings.under.requests[0].account.tier;
+
+        // // get excess accounts, if any
+        // if (holdings.excess.total > 0) {
+
+        //     let maxTier = Math.max.apply(
+        //         Math,
+        //         holdings.excess.requests.map(o => { return o.account.tier; })
+        //     );
+
+        //     let acct;
+        //     let tmp;
+
+        //     console.log(`toAcctTier: ${currentTier},  max: ${maxTier}`)
+        //     for (let tier = currentTier; tier <= maxTier; ++tier) {
+        //         console.log(`toAcctTier: ${currentTier}, tier: ${tier}, max: ${maxTier}`)
+        //         for (let i = 0 ; i < holdings.excess.requests.length; ++i) {
+        //             acct = holdings.excess.requests[i];
+                    
+        //             // if tier match & has cash, create transfer
+        //             if (acct.account.tier <= currentTier && acct.amount > 0) {
+        //                 tmp = amountNeeded;
+        //                 amountNeeded = amountNeeded > acct.amount ? amountNeeded - acct.amount : 0;
+        //                 acct.amount -= tmp;
+
+        //                 idk.push({
+        //                     amountToTransfer: tmp,
+        //                     toAccount: holdings.under.requests[0].account.name,
+        //                     fromAccount: acct.account.name
+        //                 })
+        //             }
+        //         }
+        //     }
+        // }
+    }
+
+    return transfers;
+
+}
+
+// t1 excess, t2 between, t3 reserve
+    // t1->t2->t3
+// t1 excess, t2 under, t3 reserve:
+    // t1->t2->t3
+// t1 between, t2 under, t3 reserve
+    // t1->t2
+// t1 between, t2 excess, t3 reserve
+    // t2->t3
+// t1 under, t2 w/ excess, t3 reserve
+    // t2->t1
+// t1 under, t2 between, t3 reserve
+    // t2->t1
+
+// t1 excess, t2 under, t3 between, t4 reserve
+    // t1->t2, t3->t2, t4->t2
+    // t1->t4
+
+// t1 excess, t2 under, t3 excess, t4 reserve
+    // t1->t2, t3->t2, t4->t2
+    // t1->t4, t3->t4
+
+// t1 between, t2 under, t2' between, t3 between, t4 reserve
+
 export function cascade(positions: AccountPositions, conf: CascadeConf) {
 
     const transferPairs: Transfer[] = [];
 
-    const to: TransferHalf[] = (positions as any)[`in${conf.to}`];
-    const from: TransferHalf[] = (positions as any)[`in${conf.from}`];
+    const to: Request[] = (positions as any)[`in${conf.to}`];
+    const from: Request[] = (positions as any)[`in${conf.from}`];
     let remainingNeed: number = (positions as any)[`total${conf.to}`];
     let remainingExcess: number = (positions as any)[`total${conf.from}`];
     
-    if (from.length > 0 && to.length > 0) {
+    if (from?.length > 0 && to.length > 0) {
 
         let isHigherTier: boolean = false;
         let hasRemainingCash: boolean = false;
@@ -71,142 +261,138 @@ export function cascade(positions: AccountPositions, conf: CascadeConf) {
 
     return plan;
 }
-    // from & to > 0? 
-        // for each to
-            // for each from
-                // from.tier > to.tier? from.hasCash?
-                    // 
 
-// function fillToMin()
-    // ins = need, outs = excess
-    // more needed?
-        // ins = need, outs = between
-        // more needed?
-            // ins = need, outs = reserve
-        // done
-// function fillToMax()
-    // ins = between, outs = excess
-// function fillReserve()
-    // still excess?
-        // ins = reserve, outs = excess
-        //
+export function idk(accounts: AccountConfig[]) {
+    const requests = getAccountRequests(accounts);
 
-export function buildTransferPlan(accounts: AccountConfig[]) {
-
-    const positions: AccountPositions = insAndOuts(accounts);
-    let outs: TransferHalf[] = positions.inExcess; // TODO dynamic
-    let ins: TransferHalf[] = positions.inNeed;    // TODO dynamic
-
-    const transfers: Transfer[] = [];
-    let remainingNeed = positions.totalNeed;
-    let remainingGreed = positions.totalExcess;
-
-    const idk = cascade(positions, { from: 'Excess', to: 'Need' });
-    return idk;
 
 }
 
-export function plan(accounts: AccountConfig[]) {
+// builds the initial positions object
+export function getAccountRequests(accounts: AccountConfig[]): AccountRequests {
 
-    const positions: AccountPositions = insAndOuts(accounts);
-    const outs: TransferHalf[] = positions.inExcess;
-    const ins: TransferHalf[] = positions.inNeed;
-    const transfers: Transfer[] = [];
+    let totalUnder: number = 0;
+    const accountsUnder: Request[] = [];
 
-    let remainingNeed = positions.totalNeed;
-    let remainingGreed = positions.totalExcess;
+    let totalBetween: number = 0;
+    const accountsBetween: Request[] = [];
 
-    // match lower tier ins/outs
-    if (ins.length > 0) {
-        if (outs.length > 0) {
+    let totalExcess: number = 0;
+    const accountsExcess: Request[] = [];
 
-            let greedAcct;
-            let isHigherTier: boolean = false;
-            let hasRemainingCash: boolean = false;
+    let totalReserve: number = 0;
+    const accountsReserve: Request[] = [];
 
-            ins.forEach(needAcct => {
-            
-                for (let i = 0; i < outs.length; ++i) {
+    let tempAmount: number;
+    accounts.forEach(curAcct => {
 
-                    greedAcct = outs[i];
-                    hasRemainingCash = greedAcct.amount > 0;
-                    isHigherTier = greedAcct.account.tier != needAcct.account.tier;
-                    
-                    if (hasRemainingCash && isHigherTier) {
+        // TODO where/how are errors handled?
 
-                        if (greedAcct.amount >= needAcct.amount) {
+        switch(getHoldingClass(curAcct)) {
 
-                            transfers.push({
-                                in: needAcct.account,
-                                out: greedAcct.account,
-                                amount: needAcct.amount
-                            })
+            case HoldingClass.UNDER:
+                tempAmount = curAcct.min - curAcct.current;
+                accountsUnder.push({
+                    account: curAcct,
+                    amount: tempAmount,
+                    direction: RequestDirection.IN
+                });
+                totalUnder += tempAmount;
+                break;
 
-                            remainingNeed -= needAcct.amount
-                            remainingGreed -= needAcct.amount
+            case HoldingClass.BETWEEN:
+                tempAmount = (curAcct.max || 0) - curAcct.current;
+                accountsBetween.push({
+                    account: curAcct,
+                    amount: tempAmount,
+                    direction: RequestDirection.HOLD
+                });
+                totalBetween += tempAmount;
+                break;
 
-                            greedAcct.amount = greedAcct.amount - needAcct.amount;
-                            needAcct.amount = 0;
+            case HoldingClass.EXCESS:
+                tempAmount = curAcct.current - (curAcct.max || 0);
+                accountsExcess.push({
+                    account: curAcct,
+                    amount: tempAmount,
+                    direction: RequestDirection.OUT
+                });
+                totalExcess += tempAmount;
+                break;
 
-                            break;
-
-                        } else {
-
-                            transfers.push({
-                                in: needAcct.account,
-                                out: greedAcct.account,
-                                amount: greedAcct.amount
-                            })
-
-                            remainingNeed -= greedAcct.amount
-                            remainingGreed -= greedAcct.amount
-
-                            needAcct.amount = needAcct.amount - greedAcct.amount;
-                            greedAcct.amount = 0;
-                        }
-                    }
-                }
-
-                // is there still excess?
-                    // xfer to next tier not at max
-                // is there still need?
-                    // repeat for accts between min and max (HOLD amt)
-
-                if (remainingGreed > 0) {
-                    // transfer to next tier not at max
-                    // still remaining?
-                    // transfer to finally.
-                }
-
-                if (remainingNeed > 0) { 
-                    // TODO
-                }
-            })
-        } else {
-            // TODO - bring down to min
+            case HoldingClass.RESERVE:
+                tempAmount = curAcct.current - (curAcct.max || 0);
+                accountsReserve.push({
+                    account: curAcct,
+                    amount: tempAmount,
+                    direction: RequestDirection.HOLD
+                });
+                totalReserve += tempAmount;
+                break;
         }
+    });
+
+    return {
+        under: { requests: accountsUnder.sort(sortByTier), total: totalUnder },
+        between: { requests: accountsBetween.sort(sortByTier), total: totalBetween },
+        excess: { requests: accountsExcess.sort(sortByTier), total: totalExcess },
+        reserve: { requests: accountsReserve.sort(sortByTier), total: totalReserve }
+    } as AccountRequests;
+}
+
+function sortByTier(req1: Request, req2: Request) {
+    return req1.account.tier - req2.account.tier;
+}
+
+
+// TODO build errors
+const theError = 'idk whats up with this';
+
+function getHoldingClass(account: AccountConfig): HoldingClass {
+
+    // TODO handle exactly @ min/max
+
+    // for readability
+    const hasAMax = account.hasOwnProperty('max');
+    const isAboveMin = account.current > account.min;
+    const isAboveMax = hasAMax && account.current > (account.max || Infinity);
+    const isBetweenMinAndMax = isAboveMin && hasAMax && account.current <= (account.max || -Infinity);
+
+    let holdingClass: HoldingClass;
+
+    if (!isAboveMin) {
+
+        holdingClass = HoldingClass.UNDER;
+
+    } else if (isBetweenMinAndMax) {
+
+        holdingClass = HoldingClass.BETWEEN;
+
+    } else if (isAboveMax) {
+
+        holdingClass = HoldingClass.EXCESS;
+
+    } else if (isAboveMin && !hasAMax) {
+
+        holdingClass = HoldingClass.RESERVE;
+
+    } else {
+        throw theError;
     }
-
-    const plan = {
-        transfers: transfers,
-        remainingExcess: remainingGreed,
-        remainingNeed: remainingNeed
-    }
-
-    return plan;
-
+    
+    return holdingClass;
 }
 
 export function insAndOuts(accounts: AccountConfig[]): AccountPositions {
 
     let totalInNeed: number = 0;
-    const accountsInNeed: TransferHalf[] = [];
+    const accountsInNeed: Request[] = [];
 
     let totalInExcess: number = 0;
-    const accountsInExcess: TransferHalf[] = [];
+    const accountsInExcess: Request[] = [];
 
     let totalInBetween: number = 0;
-    const accountsInBetween: TransferHalf[] = [];
+    const accountsInBetween: Request[] = [];
 
     let amountNeeded: number;
     accounts.forEach(curAcct => {
@@ -218,7 +404,7 @@ export function insAndOuts(accounts: AccountConfig[]): AccountPositions {
                 accountsInNeed.push({
                     account: curAcct,
                     amount: amountNeeded,
-                    direction: TransferDirection.IN
+                    direction: RequestDirection.IN
                 });
                 totalInNeed += amountNeeded;
                 return;
@@ -236,7 +422,7 @@ export function insAndOuts(accounts: AccountConfig[]): AccountPositions {
                 accountsInBetween.push({
                     account: curAcct,
                     amount: amountNeeded,
-                    direction: TransferDirection.HOLD
+                    direction: RequestDirection.HOLD
                 });
                 totalInBetween += amountNeeded;
 
@@ -246,7 +432,7 @@ export function insAndOuts(accounts: AccountConfig[]): AccountPositions {
                 accountsInExcess.push({
                     account: curAcct,
                     amount: amountNeeded,
-                    direction: TransferDirection.OUT
+                    direction: RequestDirection.OUT
                 });
                 totalInExcess += amountNeeded;
             }
@@ -273,3 +459,4 @@ export function underTheLine(accounts: AccountConfig[]) {
 }
 
 export function overTheLine(accounts: AccountConfig[]) {}
+

@@ -1,5 +1,25 @@
-import { plan, insAndOuts, buildTransferPlan } from '../src/core/buildPlan';
+import { cascadeUnder, getAccountRequests, cascadeFrom } from '../src/core/buildPlan';
 import { AccountConfig } from '../src/types';
+
+// should move across same tier?
+    // make it an option?
+    // only excess? betweens ok?
+        // only transfer excess option?
+
+// t1 under & t1 between:
+    // between moved to under?
+
+// is between just is an order of operations thing?
+// TODO option/setting for treat between as excess?
+// t1 w/ excess, t2 in need, t3 reserve:
+    // t1 -> t2
+// t1 between, t2 in need, t3 reserve
+    // t3 -> t2
+// t1 in need, t2 w/ excess, t3 reserve
+    // t2->t1
+// t1 in need, t2 between, t3 reserve
+    // t2 -> t1 (is this intended?)
+    // t3->t1 instead? ppl would want to keep cash in interest accounts...
 
 const testOne: AccountConfig[] = [{
     id: '001',
@@ -67,13 +87,17 @@ const testDeepNeed: AccountConfig[] = [{
 }]
 
 describe('core logic', function() {
-    
-    it('ins and outs', function() {
 
-        const pos = insAndOuts(testDeepNeed);
-
-        console.log(pos);
+    before(function() {
+        console.log(testDeepNeed);
     })
+    
+    // it('ins and outs', function() {
+
+    //     const pos = insAndOuts(testDeepNeed);
+
+    //     console.log(pos);
+    // })
 
     // it('solves shallow need', function() {
     //     const xfrs = plan(testOne)
@@ -82,9 +106,15 @@ describe('core logic', function() {
     // })
 
     it('solves deep need', function() {
-        const xfrs = buildTransferPlan(testDeepNeed)
+        const xfrs = getAccountRequests(testDeepNeed)
 
         console.log(xfrs)
+
+        console.log(cascadeUnder(xfrs));
+
+        console.log(xfrs)
+
+        // console.log(cascadeFrom(xfrs, { from: 'excess', to: 'under' }), xfrs)
     })
 
 })
