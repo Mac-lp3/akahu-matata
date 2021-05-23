@@ -1,4 +1,4 @@
-import { AccountRequests, HoldingClass, AccountConfig, AccountPositions, Request, Transfer, RequestDirection } from '../types';
+import { AccountRequests, HoldingClass, AccountConfig, Request, RequestDirection } from '../types';
 
 interface CascadeConf {
     from: string;
@@ -6,53 +6,26 @@ interface CascadeConf {
     upOnly?: boolean;
 }
 
-export function buildTransferPlan(accounts: AccountConfig[]) {
+// t1 excess, t2 between, t3 reserve
+    // t1->t2->t3
+// t1 excess, t2 under, t3 reserve:
+    // t1->t2->t3
+// t1 between, t2 under, t3 reserve
+    // t1->t2
+// t1 between, t2 excess, t3 reserve
+    // t2->t3
+// t1 under, t2 w/ excess, t3 reserve
+    // t2->t1
+// t1 under, t2 between, t3 reserve
+    // t2->t1
 
-    const positions: AccountPositions = insAndOuts(accounts);
-    let outs: Request[] = positions.inExcess; // TODO dynamic
-    let ins: Request[] = positions.inNeed;    // TODO dynamic
+// t1 excess, t2 under, t3 between, t4 reserve
+    // t1->t2, t3->t2, t4->t2
+    // t1->t4
 
-    const transfers: Transfer[] = [];
-    let remainingNeed = positions.totalNeed;
-    let remainingGreed = positions.totalExcess;
-
-    let newPosition = cascade(positions, { from: 'Excess', to: 'Need' });
-    if (newPosition.remainingNeed > 0) {
-        newPosition = cascade(positions, { from: 'reserve', to: 'Need' });
-    }
-
-    // TODO repeate for each 
-    return newPosition;
-
-}
-
-
-// ins = under, outs = excess
-// more under?
-    // ins = under, outs = between
-    // more needed? 
-        // ins = under, outs = reserve
-        // done
-// more excess?
-    // ins = between, outs = excess
-    // more excess?
-        // ins = reserve, outs = excess
-//done
-
-// for each under:
-
-    // any excess in same or lower tier?
-        // create transfers
-    // any betweens in same or lower tier?
-        // create transfers
-    // any reserves in this tier?
-        // create transfers
-    // enough?
-        // repeate for t++
-
-
-// excess goes any direction. Favor: up, side, down
-// between goes side or down. favor down, then side
+// t1 excess, t2 under, t3 excess, t4 reserve
+    // t1->t2, t3->t2, t4->t2
+    // t1->t4, t3->t4
 
 export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf) {
 
@@ -63,7 +36,6 @@ export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf)
     let remainingTo: number = (accountRequests as any)[`${conf.to}`].total;
     let remainingFrom: number = (accountRequests as any)[`${conf.from}`].total;
 
-    let tempAmount: number;
     for (let i = 0; i < to.length; ++i) {
 
         for(let j = 0; j < from.length; ++j) {
@@ -107,42 +79,37 @@ export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf)
     return transferPairs;
 }
 
-export function cascadeUnder(holdings: AccountRequests) {
+export function cascade(holdings: AccountRequests) {
 
     let transfers: any[] = [];
 
     if (holdings.under.total > 0) {
 
-        if(holdings.excess.total > 0) {
+        if (holdings.excess.total > 0) {
 
-            // TODO use the enums
-            transfers.push(cascadeFrom(holdings, {from: 'excess', to: 'under'}))
+            transfers.push(cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.UNDER}))
         }
 
-        if(holdings.under.total > 0 && holdings.between.total > 0) {
+        if (holdings.under.total > 0 && holdings.between.total > 0) {
 
-            // TODO use the enums
-            transfers.push(cascadeFrom(holdings, {from: 'between', to: 'under'}))
+            transfers.push(cascadeFrom(holdings, {from: HoldingClass.BETWEEN, to: HoldingClass.UNDER}))
         }
 
         if (holdings.under.total > 0 && holdings.reserve.total > 0) {
 
-            // TODO use the enums
-            transfers.push(cascadeFrom(holdings, {from: 'reserve', to: 'under'}))
+            transfers.push(cascadeFrom(holdings, {from: HoldingClass.RESERVE, to: HoldingClass.UNDER}))
         }
     }
 
     if (holdings.excess.total > 0) {
         
-        // TODO enums
         // TODO e -> b should only go up
-        transfers.push(cascadeFrom(holdings, {from: 'excess', to: 'between', upOnly: true}))
+        transfers.push(cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.BETWEEN, upOnly: true}))
 
         if (holdings.excess.total > 0 && holdings.reserve.total > 0) {
 
             // TODO is there a better way to check for a reserve account?
-            // TODO use the enums
-            transfers.push(cascadeFrom(holdings, {from: 'excess', to: 'reserve'}))
+            transfers.push(cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.RESERVE}))
         }
     }
 
@@ -150,103 +117,6 @@ export function cascadeUnder(holdings: AccountRequests) {
 
 }
 
-// t1 excess, t2 between, t3 reserve
-    // t1->t2->t3
-// t1 excess, t2 under, t3 reserve:
-    // t1->t2->t3
-// t1 between, t2 under, t3 reserve
-    // t1->t2
-// t1 between, t2 excess, t3 reserve
-    // t2->t3
-// t1 under, t2 w/ excess, t3 reserve
-    // t2->t1
-// t1 under, t2 between, t3 reserve
-    // t2->t1
-
-// t1 excess, t2 under, t3 between, t4 reserve
-    // t1->t2, t3->t2, t4->t2
-    // t1->t4
-
-// t1 excess, t2 under, t3 excess, t4 reserve
-    // t1->t2, t3->t2, t4->t2
-    // t1->t4, t3->t4
-
-// t1 between, t2 under, t2' between, t3 between, t4 reserve
-
-export function cascade(positions: AccountPositions, conf: CascadeConf) {
-
-    const transferPairs: Transfer[] = [];
-
-    const to: Request[] = (positions as any)[`in${conf.to}`];
-    const from: Request[] = (positions as any)[`in${conf.from}`];
-    let remainingNeed: number = (positions as any)[`total${conf.to}`];
-    let remainingExcess: number = (positions as any)[`total${conf.from}`];
-    
-    if (from?.length > 0 && to.length > 0) {
-
-        let isHigherTier: boolean = false;
-        let hasRemainingCash: boolean = false;
-
-        to.forEach(toAccount => {
-            for (let i = 0; i < from.length; ++i) {
-
-                hasRemainingCash = from[i].amount > 0;
-                isHigherTier = from[i].account.tier > toAccount.account.tier;
-
-                if (hasRemainingCash && isHigherTier) {
-
-                    if (from[i].amount >= toAccount.amount) {
-
-                        transferPairs.push({
-                            in: toAccount.account,
-                            out: from[i].account,
-                            amount: toAccount.amount
-                        })
-
-                        remainingNeed -= toAccount.amount
-                        remainingExcess -= toAccount.amount
-
-                        from[i].amount = from[i].amount - toAccount.amount;
-                        toAccount.amount = 0;
-
-                        break;
-
-                    } else {
-
-                        transferPairs.push({
-                            in: toAccount.account,
-                            out: from[i].account,
-                            amount: from[i].amount
-                        })
-
-                        remainingNeed -= from[i].amount
-                        remainingExcess -= from[i].amount
-
-                        toAccount.amount = toAccount.amount - from[i].amount;
-                        from[i].amount = 0;
-                    }
-
-                }
-            }
-        });
-    }
-
-    const plan = {
-        transfers: transferPairs,
-        remainingExcess: remainingExcess,
-        remainingNeed: remainingNeed
-    }
-
-    return plan;
-}
-
-export function idk(accounts: AccountConfig[]) {
-    const requests = getAccountRequests(accounts);
-
-
-}
-
-// builds the initial positions object
 export function getAccountRequests(accounts: AccountConfig[]): AccountRequests {
 
     let totalUnder: number = 0;
@@ -360,81 +230,3 @@ function getHoldingClass(account: AccountConfig): HoldingClass {
     
     return holdingClass;
 }
-
-export function insAndOuts(accounts: AccountConfig[]): AccountPositions {
-
-    let totalInNeed: number = 0;
-    const accountsInNeed: Request[] = [];
-
-    let totalInExcess: number = 0;
-    const accountsInExcess: Request[] = [];
-
-    let totalInBetween: number = 0;
-    const accountsInBetween: Request[] = [];
-
-    let amountNeeded: number;
-    accounts.forEach(curAcct => {
-
-        if (curAcct.min > 0) {
-            if (curAcct.current < curAcct.min) {
-
-                amountNeeded = curAcct.min - curAcct.current;
-                accountsInNeed.push({
-                    account: curAcct,
-                    amount: amountNeeded,
-                    direction: RequestDirection.IN
-                });
-                totalInNeed += amountNeeded;
-                return;
-            }
-
-            if (curAcct.current === curAcct.min) {
-                return;
-            }
-        }
-
-        if (curAcct.max && curAcct.max > 0) {
-            if (curAcct.current <= curAcct.max) {
-
-                amountNeeded = curAcct.max - curAcct.current;
-                accountsInBetween.push({
-                    account: curAcct,
-                    amount: amountNeeded,
-                    direction: RequestDirection.HOLD
-                });
-                totalInBetween += amountNeeded;
-
-            } else {
-
-                amountNeeded = curAcct.current - curAcct.max;
-                accountsInExcess.push({
-                    account: curAcct,
-                    amount: amountNeeded,
-                    direction: RequestDirection.OUT
-                });
-                totalInExcess += amountNeeded;
-            }
-        }
-    });
-
-    const io: AccountPositions = {
-        inNeed: accountsInNeed,
-        totalNeed: totalInNeed,
-        inExcess: accountsInExcess,
-        totalExcess: totalInExcess,
-        between: accountsInBetween,
-        totalBetween: totalInBetween
-    }
-
-    return io;
-}
-
-export function amountToTransfer(account: AccountConfig): number { return 0; }
-
-export function underTheLine(accounts: AccountConfig[]) {
-    // is acct under?
-    // go up a tier
-}
-
-export function overTheLine(accounts: AccountConfig[]) {}
-

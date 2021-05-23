@@ -33,6 +33,7 @@ BASE_URL=https://api.akahu.io/v1/
 * dummy data to match each scenario
 * unit tests w/ conditions
 * generating the text message
+* integration w/ api
 
 triggers every X days
 

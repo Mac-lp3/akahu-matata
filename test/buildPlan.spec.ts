@@ -1,4 +1,4 @@
-import { cascadeUnder, getAccountRequests, cascadeFrom } from '../src/core/buildPlan';
+import { cascade, getAccountRequests, cascadeFrom } from '../src/core/buildPlan';
 import { AccountConfig } from '../src/types';
 
 // should move across same tier?
@@ -88,29 +88,16 @@ const testDeepNeed: AccountConfig[] = [{
 
 describe('core logic', function() {
 
-    before(function() {
-        console.log(testDeepNeed);
-    })
+    // before(function() {
+    //     console.log(testDeepNeed);
+    // })
     
-    // it('ins and outs', function() {
-
-    //     const pos = insAndOuts(testDeepNeed);
-
-    //     console.log(pos);
-    // })
-
-    // it('solves shallow need', function() {
-    //     const xfrs = plan(testOne)
-
-    //     console.log(xfrs)
-    // })
-
     it('solves deep need', function() {
         const xfrs = getAccountRequests(testDeepNeed)
 
         console.log(xfrs)
 
-        console.log(cascadeUnder(xfrs));
+        console.log(cascade(xfrs));
 
         console.log(xfrs)
 
