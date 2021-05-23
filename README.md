@@ -28,6 +28,12 @@ BASE_URL=https://api.akahu.io/v1/
 
 ## CSS
 
+* return type of cascade function
+* clean up / names for cascade functions
+* dummy data to match each scenario
+* unit tests w/ conditions
+* generating the text message
+
 triggers every X days
 
 gets balance of t1, t2, t3, tN & checks against their max/min

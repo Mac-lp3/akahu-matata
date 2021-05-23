@@ -3,6 +3,7 @@ import { AccountRequests, HoldingClass, AccountConfig, AccountPositions, Request
 interface CascadeConf {
     from: string;
     to: string;
+    upOnly?: boolean;
 }
 
 export function buildTransferPlan(accounts: AccountConfig[]) {
@@ -67,6 +68,8 @@ export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf)
 
         for(let j = 0; j < from.length; ++j) {
 
+            // TODO check tiers
+
             if (to[i].amount <= from[j].amount) {
 
                 transferPairs.push({
@@ -116,7 +119,6 @@ export function cascadeUnder(holdings: AccountRequests) {
             transfers.push(cascadeFrom(holdings, {from: 'excess', to: 'under'}))
         }
 
-        // check if still under?
         if(holdings.under.total > 0 && holdings.between.total > 0) {
 
             // TODO use the enums
@@ -128,44 +130,20 @@ export function cascadeUnder(holdings: AccountRequests) {
             // TODO use the enums
             transfers.push(cascadeFrom(holdings, {from: 'reserve', to: 'under'}))
         }
+    }
 
+    if (holdings.excess.total > 0) {
+        
+        // TODO enums
+        // TODO e -> b should only go up
+        transfers.push(cascadeFrom(holdings, {from: 'excess', to: 'between', upOnly: true}))
 
-        // // for each tier starting w/ current
-        // let amountNeeded = holdings.under.requests[0].amount;
-        // let currentTier = holdings.under.requests[0].account.tier;
+        if (holdings.excess.total > 0 && holdings.reserve.total > 0) {
 
-        // // get excess accounts, if any
-        // if (holdings.excess.total > 0) {
-
-        //     let maxTier = Math.max.apply(
-        //         Math,
-        //         holdings.excess.requests.map(o => { return o.account.tier; })
-        //     );
-
-        //     let acct;
-        //     let tmp;
-
-        //     console.log(`toAcctTier: ${currentTier},  max: ${maxTier}`)
-        //     for (let tier = currentTier; tier <= maxTier; ++tier) {
-        //         console.log(`toAcctTier: ${currentTier}, tier: ${tier}, max: ${maxTier}`)
-        //         for (let i = 0 ; i < holdings.excess.requests.length; ++i) {
-        //             acct = holdings.excess.requests[i];
-                    
-        //             // if tier match & has cash, create transfer
-        //             if (acct.account.tier <= currentTier && acct.amount > 0) {
-        //                 tmp = amountNeeded;
-        //                 amountNeeded = amountNeeded > acct.amount ? amountNeeded - acct.amount : 0;
-        //                 acct.amount -= tmp;
-
-        //                 idk.push({
-        //                     amountToTransfer: tmp,
-        //                     toAccount: holdings.under.requests[0].account.name,
-        //                     fromAccount: acct.account.name
-        //                 })
-        //             }
-        //         }
-        //     }
-        // }
+            // TODO is there a better way to check for a reserve account?
+            // TODO use the enums
+            transfers.push(cascadeFrom(holdings, {from: 'excess', to: 'reserve'}))
+        }
     }
 
     return transfers;
