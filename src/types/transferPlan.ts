@@ -1,5 +1,6 @@
-import { AccountConfig, AccountState } from './accounts';
+import { AccountConfig } from './accounts';
 
+// TODO remove this?
 export enum RequestDirection {
     IN = 'IN',
     OUT = 'OUT',
@@ -27,28 +28,9 @@ export enum HoldingClass {
     RESERVE = 'reserve'
 }
 
-export interface AccountPositions {
-    inNeed: Request[];
-    totalNeed: number;
-    inExcess: Request[];
-    totalExcess: number;
-    between: Request[];
-    totalBetween: number;
-}
-
-export interface Transfer {
-    in: AccountConfig;
-    out: AccountConfig;
-    amount: number;
-}
-
-export interface TransferDef {
-    in: Request;
-    out: Request;
-    from: string;
-    fromFier: number;
-    to: string;
-    toTier: number;
+export interface TransferDefinition {
+    from: AccountConfig;
+    to: AccountConfig;
     amount: number;
 }
 
@@ -57,9 +39,3 @@ export interface Request {
     account: AccountConfig;
     amount: number;
 }
-
-export interface TransferPlan {
-    requests: AccountRequests;
-    orderedTransfers: TransferDef[];
-}
-

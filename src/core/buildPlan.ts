@@ -1,4 +1,4 @@
-import { AccountRequests, HoldingClass, AccountConfig, Request, RequestDirection } from '../types';
+import { AccountRequests, HoldingClass, AccountConfig, Request, RequestDirection, TransferDefinition } from '../types';
 
 interface CascadeConf {
     from: string;
@@ -6,31 +6,10 @@ interface CascadeConf {
     upOnly?: boolean;
 }
 
-// t1 excess, t2 between, t3 reserve
-    // t1->t2->t3
-// t1 excess, t2 under, t3 reserve:
-    // t1->t2->t3
-// t1 between, t2 under, t3 reserve
-    // t1->t2
-// t1 between, t2 excess, t3 reserve
-    // t2->t3
-// t1 under, t2 w/ excess, t3 reserve
-    // t2->t1
-// t1 under, t2 between, t3 reserve
-    // t2->t1
-
-// t1 excess, t2 under, t3 between, t4 reserve
-    // t1->t2, t3->t2, t4->t2
-    // t1->t4
-
-// t1 excess, t2 under, t3 excess, t4 reserve
-    // t1->t2, t3->t2, t4->t2
-    // t1->t4, t3->t4
-
 // TODO better name
-export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf) {
+export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf): TransferDefinition[] {
 
-    const transferPairs: any[] = [];
+    const transferPairs: TransferDefinition[] = [];
 
     const to: Request[] = (accountRequests as any)[`${conf.to}`].requests;
     const from: Request[] = (accountRequests as any)[`${conf.from}`].requests;
@@ -40,7 +19,6 @@ export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf)
     for (let i = 0; i < to.length; ++i) {
 
         for(let j = 0; j < from.length; ++j) {
-
 
             if (conf.upOnly) {
                 // only allow sideways & upward movement
@@ -86,36 +64,36 @@ export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf)
     return transferPairs;
 }
 
-export function cascade(holdings: AccountRequests) {
+export function cascade(holdings: AccountRequests): TransferDefinition[] {
 
-    let transfers: any[] = [];
+    let transfers: TransferDefinition[] = [];
 
     if (holdings.under.total > 0) {
 
         if (holdings.excess.total > 0) {
 
-            transfers.push(cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.UNDER}))
+            transfers.push(...cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.UNDER}))
         }
 
         if (holdings.under.total > 0 && holdings.between.total > 0) {
 
-            transfers.push(cascadeFrom(holdings, {from: HoldingClass.BETWEEN, to: HoldingClass.UNDER}))
+            transfers.push(...cascadeFrom(holdings, {from: HoldingClass.BETWEEN, to: HoldingClass.UNDER}))
         }
 
         if (holdings.under.total > 0 && holdings.reserve.total > 0) {
 
-            transfers.push(cascadeFrom(holdings, {from: HoldingClass.RESERVE, to: HoldingClass.UNDER}))
+            transfers.push(...cascadeFrom(holdings, {from: HoldingClass.RESERVE, to: HoldingClass.UNDER}))
         }
     }
 
     if (holdings.excess.total > 0) {
         
-        transfers.push(cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.BETWEEN, upOnly: true}))
+        transfers.push(...cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.BETWEEN, upOnly: true}))
 
         if (holdings.excess.total > 0 && holdings.reserve.total > 0) {
 
             // TODO is there a better way to check for a reserve account?
-            transfers.push(cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.RESERVE}))
+            transfers.push(...cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.RESERVE}))
         }
     }
 

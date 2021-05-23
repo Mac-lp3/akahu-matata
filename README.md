@@ -29,7 +29,7 @@ BASE_URL=https://api.akahu.io/v1/
 ## CSS
 
 * ~~flag for 'only upward' transfers~~
-* return type of cascade function
+* ~~return type of cascade function~~
 * clean up / names for cascade functions
 * dummy data to match each scenario
 * unit tests w/ conditions
@@ -39,6 +39,29 @@ BASE_URL=https://api.akahu.io/v1/
 triggers every X days
 
 gets balance of t1, t2, t3, tN & checks against their max/min
+
+```
+t1 excess, t2 between, t3 reserve
+    t1->t2->t3
+t1 excess, t2 under, t3 reserve:
+    t1->t2->t3
+t1 between, t2 under, t3 reserve
+    t1->t2
+t1 between, t2 excess, t3 reserve
+    t2->t3
+t1 under, t2 w/ excess, t3 reserve
+    t2->t1
+t1 under, t2 between, t3 reserve
+    t2->t1
+
+t1 excess, t2 under, t3 between, t4 reserve
+    t1->t2, t3->t2, t4->t2
+    t1->t4
+
+t1 excess, t2 under, t3 excess, t4 reserve
+    t1->t2, t3->t2, t4->t2
+    t1->t4, t3->t4
+```
 
 t1 at/over max
 t1 under min
