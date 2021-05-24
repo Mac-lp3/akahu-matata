@@ -36,6 +36,10 @@ BASE_URL=https://api.akahu.io/v1/
 * user data
   * file for now
   * same as persistant store?
+
+* constructor in types/accounts.ts
+  * takes objects right from api
+
 * integration w/ api
 * user data + api data
 * main script

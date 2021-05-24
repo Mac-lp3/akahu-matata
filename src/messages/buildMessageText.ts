@@ -7,15 +7,6 @@ hi, its ${yaBoy}.
 
 you cool with this?`
 
-// ANZ CHECKING:
-// +25$ to 1000$
-
-// ANZ SAVINGS:
-// -15$ to 5000$
-
-// Simplicity INVESTMENT:
-// -10$ to 9990$`
-
     let midMessage: string = ``;
     for(const [name, fromTo] of fromToMap) {
         midMessage += `
