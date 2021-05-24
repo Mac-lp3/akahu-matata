@@ -2,9 +2,9 @@
 
 ## Account test data
 
-These files contain one or more arrays of account objects.
-
-These objects contain data returned by the akahu `GET accounts/` API call, plus additional user configuration.
+These files contain one or more objects with the following properties: 
+  * `accounts`: an array of account objects. These objects contain a mix of data from the akahu `GET accounts/` API and user configuration.
+  * `expected`: an object describing the transfers that should be generated given the state of the provided `accounts`.
 
 Each account in the list can either be `UNDER` (under the specified minimum), `BETWEEN` (between the specified minimum and maximum), `EXCESS` (over the specified maximum), or `RESERVE` (over the specified minimum and have no maximum).
 

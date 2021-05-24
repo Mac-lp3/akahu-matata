@@ -22,15 +22,20 @@ export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf)
 
             if (conf.upOnly) {
                 // only allow sideways & upward movement
-                if (from[j] > to[i]) {
+                if (from[j].account.tier > to[i].account.tier) {
                     continue;
                 }
+            }
+
+            // break if the last account had enough to reconcile
+            if (to[i].amount === 0) {
+                break;
             }
 
             if (to[i].amount <= from[j].amount) {
 
                 transferPairs.push({
-                    from: from[i].account,
+                    from: from[j].account,
                     to: to[i].account,
                     amount: to[i].amount
                 });
@@ -44,15 +49,15 @@ export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf)
             } else {
                 
                 transferPairs.push({
-                    from: from[i].account,
+                    from: from[j].account,
                     to: to[i].account,
-                    amount: from[i].amount
+                    amount: from[j].amount
                 });
                 
-                remainingTo -= from[i].amount;
-                remainingFrom -= from[i].amount;
-                to[j].amount -= from[i].amount;
-                from[i].amount = 0;
+                remainingTo -= from[j].amount;
+                remainingFrom -= from[j].amount;
+                to[i].amount -= from[j].amount;
+                from[j].amount = 0;
             }
 
         }
@@ -186,7 +191,7 @@ function getHoldingClass(account: AccountConfig): HoldingClass {
 
     // for readability
     const hasAMax = account.hasOwnProperty('max');
-    const isAboveMin = account.current > account.min;
+    const isAboveMin = account.current >= account.min;
     const isAboveMax = hasAMax && account.current > (account.max || Infinity);
     const isBetweenMinAndMax = isAboveMin && hasAMax && account.current <= (account.max || -Infinity);
 

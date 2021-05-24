@@ -30,15 +30,18 @@ BASE_URL=https://api.akahu.io/v1/
 
 * ~~flag for 'only upward' transfers~~
 * ~~return type of cascade function~~
+* ~~dummy data to match each scenario~~
+* ~~unit tests w/ conditions~~
 * clean up / names for cascade functions
-* dummy data to match each scenario
-* unit tests w/ conditions
 * generating the text message
 * integration w/ api
 
-triggers every X days
+`EXCESS` funds transfer to:
+  1. `UNDER` funds of any tier (preferring below)
+  2. `BETWEEN` funds at or above this tier
 
-gets balance of t1, t2, t3, tN & checks against their max/min
+`BETWEEN` funds transfer to:
+  1. `UNDER` funds of any tier (preferring below)
 
 ```
 t1 excess, t2 between, t3 reserve
@@ -62,6 +65,10 @@ t1 excess, t2 under, t3 excess, t4 reserve
     t1->t2, t3->t2, t4->t2
     t1->t4, t3->t4
 ```
+
+triggers every X days
+
+gets balance of t1, t2, t3, tN & checks against their max/min
 
 t1 at/over max
 t1 under min
