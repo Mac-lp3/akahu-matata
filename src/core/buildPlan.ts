@@ -1,13 +1,12 @@
 import { AccountRequests, HoldingClass, AccountConfig, Request, RequestDirection, TransferDefinition } from '../types';
 
-interface CascadeConf {
+interface TransferConfig {
     from: string;
     to: string;
     upOnly?: boolean;
 }
 
-// TODO better name
-export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf): TransferDefinition[] {
+export function createTransfers(accountRequests: AccountRequests, conf: TransferConfig): TransferDefinition[] {
 
     const transferPairs: TransferDefinition[] = [];
 
@@ -69,36 +68,37 @@ export function cascadeFrom(accountRequests: AccountRequests, conf: CascadeConf)
     return transferPairs;
 }
 
-export function cascade(holdings: AccountRequests): TransferDefinition[] {
+export function buildTransferPlan(holdings: AccountRequests): TransferDefinition[] {
 
+    // TODO this should call getAccountRequests
     let transfers: TransferDefinition[] = [];
 
     if (holdings.under.total > 0) {
 
         if (holdings.excess.total > 0) {
 
-            transfers.push(...cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.UNDER}))
+            transfers.push(...createTransfers(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.UNDER}))
         }
 
         if (holdings.under.total > 0 && holdings.between.total > 0) {
 
-            transfers.push(...cascadeFrom(holdings, {from: HoldingClass.BETWEEN, to: HoldingClass.UNDER}))
+            transfers.push(...createTransfers(holdings, {from: HoldingClass.BETWEEN, to: HoldingClass.UNDER}))
         }
 
         if (holdings.under.total > 0 && holdings.reserve.total > 0) {
 
-            transfers.push(...cascadeFrom(holdings, {from: HoldingClass.RESERVE, to: HoldingClass.UNDER}))
+            transfers.push(...createTransfers(holdings, {from: HoldingClass.RESERVE, to: HoldingClass.UNDER}))
         }
     }
 
     if (holdings.excess.total > 0) {
         
-        transfers.push(...cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.BETWEEN, upOnly: true}))
+        transfers.push(...createTransfers(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.BETWEEN, upOnly: true}))
 
         if (holdings.excess.total > 0 && holdings.reserve.total > 0) {
 
             // TODO is there a better way to check for a reserve account?
-            transfers.push(...cascadeFrom(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.RESERVE}))
+            transfers.push(...createTransfers(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.RESERVE}))
         }
     }
 

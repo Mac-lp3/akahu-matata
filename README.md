@@ -32,9 +32,16 @@ BASE_URL=https://api.akahu.io/v1/
 * ~~return type of cascade function~~
 * ~~dummy data to match each scenario~~
 * ~~unit tests w/ conditions~~
-* clean up / names for cascade functions
 * generating the text message
+  * ~~+ sign when positive~~
+  * ~~2 decimal places~~
+  * loop in template
+* user data
 * integration w/ api
+* user data + api data
+* main script
+* clean up / names for cascade functions
+
 
 `EXCESS` funds transfer to:
   1. `UNDER` funds of any tier (preferring below)
