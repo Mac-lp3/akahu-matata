@@ -32,14 +32,16 @@ BASE_URL=https://api.akahu.io/v1/
 * ~~return type of cascade function~~
 * ~~dummy data to match each scenario~~
 * ~~unit tests w/ conditions~~
-* generating the text message
-  * ~~+ sign when positive~~
-  * ~~2 decimal places~~
-  * loop in template
+* ~~generating the text message~~
 * user data
+  * file for now
+  * same as persistant store?
 * integration w/ api
 * user data + api data
 * main script
+* persisting plan
+* listening for text/email response
+* applying plan after additional transactions
 * clean up / names for cascade functions
 
 

@@ -1,24 +1,37 @@
 import { TransferDefinition } from '../types/transferPlan'
 
-function applyTemplate(yaBoy: string, acctNames: string[], fromTos: string[]) {
+function applyTemplate(yaBoy: string, fromToMap: Map<string, string>) {
 
     const messageTemplate = `
 hi, its ${yaBoy}.
 
-you cool with this?
+you cool with this?`
 
-ANZ CHECKING:
-+25$ to 1000$
+// ANZ CHECKING:
+// +25$ to 1000$
 
-ANZ SAVINGS:
--15$ to 5000$
+// ANZ SAVINGS:
+// -15$ to 5000$
 
-Simplicity INVESTMENT:
--10$ to 9990$
+// Simplicity INVESTMENT:
+// -10$ to 9990$`
+
+    let midMessage: string = ``;
+    for(const [name, fromTo] of fromToMap) {
+        midMessage += `
+
+${name}:
+${fromTo}`
+
+    }
+
+    const endMessage = `
 
 reply "yes" in 3 days and i'll do it.
 
 :peace:`
+
+    return messageTemplate + midMessage + endMessage;
 
 }
 
@@ -66,14 +79,17 @@ export function buildPlanSummary(transferPlan: TransferDefinition[]) {
         }
     });
 
+    const fromToMap = new Map();
 
     let change: number;
     for (let [key, value] of originalsMap) {
-        change = transfersMap.get(key)
-        
-        console.log(`${value} ${buildFromTo(change, value)}`)
-
-        // console.log(`${key}: ${change > 0 ? '+'+change : change} to ${value + change}`)
+        change = transfersMap.get(key)    
+        fromToMap.set(key, buildFromTo(change, value))
     }
+
+
+    const idk = applyTemplate('me, ya boy', fromToMap);
+
+    console.log(idk)
 
 }
