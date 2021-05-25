@@ -1,5 +1,5 @@
 import { buildTransferPlan } from './core/buildPlan';
-import { buildPlanSummary } from './messages/buildMessageText';
+import { buildPlanSummary } from './core/buildMessageText';
 
 async function buildAndSendMessage(someUserId: any, transferPlan: any) {
     // TODO message sender implementation

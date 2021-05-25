@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { buildPlanSummary } from '../src/messages/buildMessageText';
+import { buildPlanSummary } from '../src/core/buildMessageText';
 import { b_u_b_r, e_u_b_r, eb_e_r, bu_u_r } from './data/resolvable';
 import { buildTransferPlan, getAccountRequests } from '../src/core/buildPlan';
 

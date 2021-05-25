@@ -76,12 +76,11 @@ BASE_URL=https://api.akahu.io/v1/
 * ~~should akahu api methods return raw object? no~~
 * ~~dao to load users~~
 * ~~tests for api methods~~
-* constructor in types/accounts.ts
-
-* update message txt gen to use the fields
+* message txt generation to use new fields
 * update all maps to use account.akahuId as the key
-
-
+* messaging component
+* containerization
+* documentation
 
 `EXCESS` funds transfer to:
   1. `UNDER` funds of any tier (preferring below)
