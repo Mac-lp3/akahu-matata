@@ -34,6 +34,10 @@ export interface TransferDefinition {
     amount: number;
 }
 
+export interface TransferPlan {
+    transfers: TransferDefinition
+}
+
 export interface Request {
     direction: RequestDirection;
     account: AccountConfig;

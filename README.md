@@ -60,7 +60,10 @@ Components:
 * ~~generating the text message~~
 * ~~user data? files for now s3 in cloud~~
 * ~~should akahu api methods return raw object? no~~
+* ~~dao to load users~~
 * tests for api methods
+  * load the user
+  * call get accounts w/ their data
 * constructor in types/accounts.ts
   * takes objects right from api
 
