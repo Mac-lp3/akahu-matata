@@ -2,7 +2,15 @@
 
 It means no worries.
 
-## Notes
+## What does it do?
+
+This system monitors bank/savings/investment account amounts and transfers funds between them when the level gets too low/high.
+
+This way, users can automatically have excess funds move to their savings account on payday (rather than specifying a static amount).
+
+For each account, users specify a mininmum, a maximum (optionally), and a tier. Excess funds are transfered up the tiers to maximize interest.
+
+## Project setup
 
 Create a file called `.env` in your project root dir with the following.
 
@@ -14,55 +22,61 @@ AKAHU_USER_TOKEN={your user token}
 BASE_URL=https://api.akahu.io/v1/
 ```
 
-## CSS
+## Cascading Savings Service
 
-flow:
-  Users use a web page to register & set up their accounts
-    The page accepts their details, forwards to akahu, and saves tokens in s3
-  On the specificed schedule, logic loads that data, gets the latest $ from akahu, generates a plan, sends that plan to the user, and stores the plan in s3 for later.
-  Separate process listens for approvals. Once recieved, the plan is executed and a message w/ latest values is sent.
-  If no approval given, plan is deleted after X time.
+**Flow**
 
-Architecture:
-  S3 as app data storage (users, transfer plans, etc). Move to mongo if needed.
-  Static s3 hosted page for sign up/ui. Browser calls both akahu and serverless api for display & sign up.
-  Based on selected time frame, user ID is added to a list of accounts to process on that schedule.
-  The plan building logic runs on ECS, generating the plans in batch.
-  text/email approvals are sent to SNS, which forwards to SQS.
-  ECS using long polling calls akahu to execute the transfers & generate a new message w/ the latest balance
+  1. Users use the main web page to register, set up their accounts, and specify a schedule.
+  2. On that schedule, the app gets the latest balances from akahu and generates a "transfer plan."
+  3. The user is sent an email or text message with a summary of the plan. If the user does not approve the plan in 3 days, it is deleted and nothing happens.
+  4. If the user replies with their approval, the transfers are executed and the user is sent a new message with the updated balances.
+
+**Architecture**
+
+  The main web page is a static site hosted on S3. The browser makes API calls to Akahu and a serverless api for the system.
+
+  Users with the same schedule are processed at the same time. The logic to build the transfer plan runs on ECS and stores its data as json objects in S3.
+
+  Data storage can move to dynamo in the future if needed.
+
+  SMS/emails are sent via SNS. Approvals also come in via SNS, which are then forwarded to SQS.
+
+  Another ECS process using long polling of the approvals to execute the plans.
   
-Components:
+**Components**
   * UI
     * Static site on s3
     * API gateway + lambda functions
-    * web page makes calls to akahu, formats data based on user input, and POSTs it to API gateway
-    * payloads are stored in s3
+    * Web page makes calls to Akahu, formats data based on user input, and POSTs it to API gateway
+    * Payloads are stored in s3
   * Scheduler (tbd)
     * ... executes the plan maker with 1 or more user IDs
   * Plan Maker
     * runs on ECS. can handle multiple requests at a time
     * grabs the user's data & most recent account balances from akahu
-    * generates the plan and saves in s3
-    * generates text and pushes to sns
+    * generates the plan and saves in S3
+    * generates text and pushes to SNS
   * SNS listener
-    * recieves sms/email approvals
-    * pushes those approvals to sqs
+    * Recieves sms/email approvals
+    * Pushes those approvals to sqs
   * Plan executor
-    * runs on ecs. handles batches of sqs messages via long polling.
+    * Runs on ecs. handles batches of sqs messages via long polling.
     * POSTs transfer payloads to Akahu based on the transfer plans in s3.
-    * generates a text message w/ the latest balances & sends to sns
+    * Generates a text message w/ the latest balances & sends to SNS
 
 ## TODO
+
 * ~~flag for 'only upward' transfers~~
 * ~~return type of cascade function~~
 * ~~dummy data to match each scenario~~
 * ~~unit tests w/ conditions~~
 * ~~generating the text message~~
 * ~~user data? files for now s3 in cloud~~
+* ~~integration w/ api~~
 * ~~should akahu api methods return raw object? no~~
 * ~~dao to load users~~
 * tests for api methods
-  * load the user
+  * ~~load the user~~
   * call get accounts w/ their data
 * constructor in types/accounts.ts
   * takes objects right from api
@@ -70,18 +84,6 @@ Components:
 * update message txt gen to use the fields
 * update all maps to use account.akahuId as the key
 
-
-* dao methods? where does the 
-  * createUser
-    * accepts a user pref object, plus some akahu account objects?
-
-* integration w/ api
-* user data + api data
-* main script
-* persisting plan
-* listening for text/email response
-* applying plan after additional transactions
-* clean up / names for cascade functions
 
 
 `EXCESS` funds transfer to:
