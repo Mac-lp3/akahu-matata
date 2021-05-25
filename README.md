@@ -75,11 +75,8 @@ BASE_URL=https://api.akahu.io/v1/
 * ~~integration w/ api~~
 * ~~should akahu api methods return raw object? no~~
 * ~~dao to load users~~
-* tests for api methods
-  * ~~load the user~~
-  * call get accounts w/ their data
+* ~~tests for api methods~~
 * constructor in types/accounts.ts
-  * takes objects right from api
 
 * update message txt gen to use the fields
 * update all maps to use account.akahuId as the key

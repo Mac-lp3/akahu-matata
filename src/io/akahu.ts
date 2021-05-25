@@ -27,8 +27,8 @@ async function retrieveAccountData(acctLookUp: AccountLookUp | AccountLookUp[]):
 
         // getting just one account or all of them?
         const url = Array.isArray(acctLookUp) ? 
-            `${process.env.BASE_URL}/accounts` :
-            `${process.env.BASE_URL}/accounts/${acctLookUp}`;
+            `${process.env.BASE_URL}accounts` :
+            `${process.env.BASE_URL}accounts/${acctLookUp}`;
 
         // get the account data from akahu
         response = await got(url, { 
@@ -46,12 +46,11 @@ async function retrieveAccountData(acctLookUp: AccountLookUp | AccountLookUp[]):
 
         // filter out any irrelevant accounts
         if (Array.isArray(acctLookUp)) {          
-            body.items = body.items.filter((item: any) => {
-                acctLookUp.some(lookUp => {
-                    lookUp.akahuId === item._id;
+            returnData = body.items.filter((item: any) => {
+                return acctLookUp.some(lookUp => {
+                    return lookUp.akahuId === item._id;
                 })
-            })
-            returnData = body.items;
+            });
         } else {
             returnData.push(body.item);
         }
@@ -68,6 +67,7 @@ async function retrieveAccountData(acctLookUp: AccountLookUp | AccountLookUp[]):
     return returnData;
 }
 
+// TODO move this to a builder?
 function buildAccountConfig(accountLookUp: AccountLookUp, rawAkahu: any): AccountConfig {
 
     let config: AccountConfig;
@@ -95,7 +95,7 @@ function buildAccountConfig(accountLookUp: AccountLookUp, rawAkahu: any): Accoun
     return config;
 }
 
-export async function buildAllAccountConfigs(accountLookUps: AccountLookUp[]): Promise<AccountConfig[]> {
+export async function getAccountConfigs(accountLookUps: AccountLookUp[]): Promise<AccountConfig[]> {
 
     const rawAccountData = await retrieveAccountData(accountLookUps);
 
