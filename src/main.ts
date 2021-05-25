@@ -13,8 +13,11 @@ const sender = new ConsoleSender();
  */
  export async function main() {
 
+
     // TODO this should be passed in
     const processIds: string[] = ['123'];
+
+    console.log(`generating plans for ${processIds.length} user IDs...`);
 
     // process each id in parallel
     await Promise.all(
@@ -37,3 +40,5 @@ async function buildAndSendMessage(transferPlan: any, user: any) {
     const text = buildPlanSummary(transferPlan, user);
     sender.send(text);
 }
+
+(async () => { await main() })();

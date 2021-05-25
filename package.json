@@ -4,6 +4,10 @@
   "description": "It means no worries.",
   "main": "index.js",
   "scripts": {
+    "prebuild": "tsc",
+    "build": "bash -c 'cp ./{.env,package.json,package-lock.json} dist/'",
+    "postbuild": "npm install --production  --prefix dist/ ",
+    "start": "node -r dotenv/config dist/main.js",
     "test": "mocha"
   },
   "author": "",
