@@ -1,4 +1,12 @@
-import { AccountRequests, HoldingClass, AccountConfig, Request, RequestDirection, TransferDefinition } from '../types';
+import { 
+    AccountRequests,
+    HoldingClass,
+    AccountConfig,
+    Request,
+    RequestDirection,
+    TransferDefinition,
+    GeneralError 
+} from '../types';
 
 interface TransferConfig {
     from: string;
@@ -6,7 +14,47 @@ interface TransferConfig {
     upOnly?: boolean;
 }
 
-export function createTransfers(accountRequests: AccountRequests, conf: TransferConfig): TransferDefinition[] {
+export function buildTransferPlan(accounts: AccountConfig[]): TransferDefinition[] {
+
+    const holdings: AccountRequests = getAccountRequests(accounts);
+
+    // TODO this should call getAccountRequests
+    let transfers: TransferDefinition[] = [];
+
+    if (holdings.under.total > 0) {
+
+        if (holdings.excess.total > 0) {
+
+            transfers.push(...createTransfers(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.UNDER}))
+        }
+
+        if (holdings.under.total > 0 && holdings.between.total > 0) {
+
+            transfers.push(...createTransfers(holdings, {from: HoldingClass.BETWEEN, to: HoldingClass.UNDER}))
+        }
+
+        if (holdings.under.total > 0 && holdings.reserve.total > 0) {
+
+            transfers.push(...createTransfers(holdings, {from: HoldingClass.RESERVE, to: HoldingClass.UNDER}))
+        }
+    }
+
+    if (holdings.excess.total > 0) {
+        
+        transfers.push(...createTransfers(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.BETWEEN, upOnly: true}))
+
+        if (holdings.excess.total > 0 && holdings.reserve.total > 0) {
+
+            // TODO is there a better way to check for a reserve account?
+            transfers.push(...createTransfers(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.RESERVE}))
+        }
+    }
+
+    return transfers;
+
+}
+
+function createTransfers(accountRequests: AccountRequests, conf: TransferConfig): TransferDefinition[] {
 
     const transferPairs: TransferDefinition[] = [];
 
@@ -68,45 +116,7 @@ export function createTransfers(accountRequests: AccountRequests, conf: Transfer
     return transferPairs;
 }
 
-export function buildTransferPlan(holdings: AccountRequests): TransferDefinition[] {
-
-    // TODO this should call getAccountRequests
-    let transfers: TransferDefinition[] = [];
-
-    if (holdings.under.total > 0) {
-
-        if (holdings.excess.total > 0) {
-
-            transfers.push(...createTransfers(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.UNDER}))
-        }
-
-        if (holdings.under.total > 0 && holdings.between.total > 0) {
-
-            transfers.push(...createTransfers(holdings, {from: HoldingClass.BETWEEN, to: HoldingClass.UNDER}))
-        }
-
-        if (holdings.under.total > 0 && holdings.reserve.total > 0) {
-
-            transfers.push(...createTransfers(holdings, {from: HoldingClass.RESERVE, to: HoldingClass.UNDER}))
-        }
-    }
-
-    if (holdings.excess.total > 0) {
-        
-        transfers.push(...createTransfers(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.BETWEEN, upOnly: true}))
-
-        if (holdings.excess.total > 0 && holdings.reserve.total > 0) {
-
-            // TODO is there a better way to check for a reserve account?
-            transfers.push(...createTransfers(holdings, {from: HoldingClass.EXCESS, to: HoldingClass.RESERVE}))
-        }
-    }
-
-    return transfers;
-
-}
-
-export function getAccountRequests(accounts: AccountConfig[]): AccountRequests {
+function getAccountRequests(accounts: AccountConfig[]): AccountRequests {
 
     let totalUnder: number = 0;
     const accountsUnder: Request[] = [];
@@ -181,10 +191,6 @@ function sortByTier(req1: Request, req2: Request) {
     return req1.account.tier - req2.account.tier;
 }
 
-
-// TODO build errors
-const theError = 'idk whats up with this';
-
 function getHoldingClass(account: AccountConfig): HoldingClass {
 
     // TODO handle exactly @ min/max
@@ -214,7 +220,7 @@ function getHoldingClass(account: AccountConfig): HoldingClass {
         holdingClass = HoldingClass.RESERVE;
 
     } else {
-        throw theError;
+        throw new GeneralError('000', 'Could not determine holding class');
     }
     
     return holdingClass;

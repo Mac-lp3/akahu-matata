@@ -108,3 +108,7 @@ export async function getAccountConfigs(accountLookUps: AccountLookUp[]): Promis
 
     return configs;
 }
+
+export class Akahu {
+    
+}
