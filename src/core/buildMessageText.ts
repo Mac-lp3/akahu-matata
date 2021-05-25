@@ -1,9 +1,12 @@
-import { TransferDefinition } from '../types/transferPlan'
+import { AccountConfig, TransferDefinition, User } from '../types';
 
-function applyTemplate(yaBoy: string, fromToMap: Map<string, string>) {
+function applyTemplate(userData: User, fromToMap: Map<string, string>) {
+
+    const boi = userData.preferences.nickName ? userData.preferences.nickName : userData.firstName;
+    const botSig = userData.preferences.botSig ? userData.preferences.botSig : 'Matata-bot';
 
     const messageTemplate = `
-hi, its ${yaBoy}.
+hi ${boi}, its ${botSig}.
 
 you cool with this?`
 
@@ -37,36 +40,50 @@ function buildFromTo(change: number, value: number): string {
     return str;
 }
 
-export function buildPlanSummary(transferPlan: TransferDefinition[]) {
+function buildAccountName(account: AccountConfig) {
+    
+    const readableName = account.nickName ? 
+        account.nickName :
+        `${account.company} ${account.type} ${account.accountNumber}`;
+
+    return readableName
+}
+
+export function buildPlanSummary(transferPlan: TransferDefinition[], userData: User) {
 
     const transfersMap = new Map();
     const originalsMap = new Map();
 
     let tmp: number = 0;
+    let toName: string;
+    let fromName: string;
     transferPlan.forEach(transfer => {
+
+        toName = buildAccountName(transfer.to);
+        fromName = buildAccountName(transfer.from);
         
         // cheaper than checking
-        originalsMap.set(transfer.to.name, transfer.to.current)
-        originalsMap.set(transfer.from.name, transfer.from.current)
+        originalsMap.set(toName, transfer.to.current)
+        originalsMap.set(fromName, transfer.from.current)
 
-        if (transfersMap.has(transfer.from.name)) {
+        if (transfersMap.has(fromName)) {
 
-            tmp = transfersMap.get(transfer.from.name);
+            tmp = transfersMap.get(fromName);
             tmp -= transfer.amount
-            transfersMap.set(transfer.from.name, tmp);
+            transfersMap.set(fromName, tmp);
 
         } else {
-            transfersMap.set(transfer.from.name, - transfer.amount);
+            transfersMap.set(fromName, - transfer.amount);
         }
 
-        if (transfersMap.has(transfer.to.name)) {
+        if (transfersMap.has(toName)) {
 
-            tmp = transfersMap.get(transfer.to.name);
+            tmp = transfersMap.get(toName);
             tmp += transfer.amount
-            transfersMap.set(transfer.to.name, tmp);
+            transfersMap.set(toName, tmp);
 
         } else {
-            transfersMap.set(transfer.to.name, transfer.amount);
+            transfersMap.set(toName, transfer.amount);
         }
     });
 
@@ -78,9 +95,8 @@ export function buildPlanSummary(transferPlan: TransferDefinition[]) {
         fromToMap.set(key, buildFromTo(change, value))
     }
 
+    const messageText = applyTemplate(userData, fromToMap);
 
-    const idk = applyTemplate('me, ya boy', fromToMap);
-
-    console.log(idk)
+    return messageText;
 
 }

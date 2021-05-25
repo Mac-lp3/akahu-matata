@@ -7,6 +7,7 @@ export interface AccountLookUp {
     name: string;
     type: string;
     tier: number;
+    accountNumber: string;
     min: number;
     max?: number;
     nickName?: string;

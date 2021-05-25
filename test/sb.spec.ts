@@ -29,7 +29,7 @@ describe('akahu api calls', function() {
         });
 
         console.log(r.statusCode);
-        console.dir(JSON.parse(r.body));
+        // console.dir(JSON.parse(r.body));
     })
 
     // it('lists individual accounts', async function() {

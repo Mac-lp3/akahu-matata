@@ -77,6 +77,7 @@ function buildAccountConfig(accountLookUp: AccountLookUp, rawAkahu: any): Accoun
         config = {
             akahuId: accountLookUp.akahuId,
             company: accountLookUp.company,
+            accountNumber: accountLookUp.accountNumber,
             current: rawAkahu.balance.current,
             min: accountLookUp.min,
             name: accountLookUp.name,

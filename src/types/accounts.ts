@@ -2,6 +2,7 @@
 export interface AccountConfig {
     akahuId: string;
     company: string;
+    accountNumber: string;
     name: string;
     type: string;
     nickName?: string

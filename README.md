@@ -44,6 +44,7 @@ BASE_URL=https://api.akahu.io/v1/
   Another ECS process using long polling of the approvals to execute the plans.
   
 **Components**
+
   * UI
     * Static site on s3
     * API gateway + lambda functions
@@ -76,9 +77,10 @@ BASE_URL=https://api.akahu.io/v1/
 * ~~should akahu api methods return raw object? no~~
 * ~~dao to load users~~
 * ~~tests for api methods~~
-* message txt generation to use new fields
-* update all maps to use account.akahuId as the key
-* messaging component
+* ~~message txt generation to use new fields~~
+* ~~gen/test account names~~
+* message sender impl/test
+* main.ts
 * containerization
 * documentation
 
@@ -148,5 +150,3 @@ reply "yes" in 3 days and i'll do it.
 
 :peace:
 ```
-
-## itr

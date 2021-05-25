@@ -7,5 +7,5 @@ export interface Dao {
 }
 
 export interface Sender {
-    send: (msg: string) => void
+    send: (msg: string) => void;
 }

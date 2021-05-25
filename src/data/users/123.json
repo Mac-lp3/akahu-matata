@@ -9,11 +9,12 @@
         "sendEmail": true,
         "sendSms": true,
         "botSig": "me, ya boi",
-        "nickName": ""
+        "nickName": "demons"
     },
     "accounts": [{
         "akahuId": "acc_ckowf6tae000008mi7uto05nu",
         "company": "ANZ",
+        "accountNumber": "01-0505-0858352-00",
         "name": "Go",
         "type": "CHECKING",
         "nickName": "",
@@ -23,6 +24,7 @@
     }, {
         "akahuId": "acc_ckowf6tc5000308miaoguh7tt",
         "company": "ANZ",
+        "accountNumber": "01-0505-0858352-01",
         "name": "Serious Saver",
         "type": "SAVINGS",
         "nickName": "Personal savings",
@@ -32,6 +34,7 @@
     }, {
         "akahuId": "acc_ckowfn0di000009k08gysaept",
         "company": "Simplicity KiwiSaver",
+        "accountNumber": "SIMF026328",
         "name": "Growth Fund",
         "type": "INVESTMENT",
         "nickName": "Investment",
