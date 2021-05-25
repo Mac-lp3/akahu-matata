@@ -1,11 +1,12 @@
 
 export interface AccountConfig {
-    id: string;
+    akahuId: string;
+    company: string;
     name: string;
-    kind: string;
-    readableName?: string
+    type: string;
+    nickName?: string
     tier: number;
-    current: number;
+    current: number; // retrieved at run time
     min: number;
     max?: number;
 }

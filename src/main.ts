@@ -32,6 +32,12 @@ async function savePlan(someUserId: any, transferPlan: any) {
     return {} as any;
 }
 
+/**
+ * The scheduled job.
+ * 
+ * loads the user's preferences. gets the latest account $. builds a transfer plan.
+ * sends the text message. saves the plan for later.
+ */
 export async function main() {
     const userPrefs = await getUserConfig('idk');
     const accounts = await getAccountObjects(userPrefs.accountList);

@@ -12,8 +12,8 @@ describe('buildTransferPlan', function() {
 
         for (let i = 0; i < transferPlan.length; ++i) {
             expect(transferPlan[i].amount).to.equal(e_u_b_r.expected.transferAmounts[i]);
-            expect(transferPlan[i].to.id).to.equal(e_u_b_r.expected.transferToIds[i]);
-            expect(transferPlan[i].from.id).to.equal(e_u_b_r.expected.transferFromIds[i]);
+            expect(transferPlan[i].to.akahuId).to.equal(e_u_b_r.expected.transferToIds[i]);
+            expect(transferPlan[i].from.akahuId).to.equal(e_u_b_r.expected.transferFromIds[i]);
         }
 
     })
@@ -27,8 +27,8 @@ describe('buildTransferPlan', function() {
 
         for (let i = 0; i < transferPlan.length; ++i) {
             expect(transferPlan[i].amount).to.equal(b_u_b_r.expected.transferAmounts[i]);
-            expect(transferPlan[i].to.id).to.equal(b_u_b_r.expected.transferToIds[i]);
-            expect(transferPlan[i].from.id).to.equal(b_u_b_r.expected.transferFromIds[i]);
+            expect(transferPlan[i].to.akahuId).to.equal(b_u_b_r.expected.transferToIds[i]);
+            expect(transferPlan[i].from.akahuId).to.equal(b_u_b_r.expected.transferFromIds[i]);
         }
 
     })
@@ -42,8 +42,8 @@ describe('buildTransferPlan', function() {
 
         for (let i = 0; i < transferPlan.length; ++i) {
             expect(transferPlan[i].amount).to.equal(eb_e_r.expected.transferAmounts[i]);
-            expect(transferPlan[i].to.id).to.equal(eb_e_r.expected.transferToIds[i]);
-            expect(transferPlan[i].from.id).to.equal(eb_e_r.expected.transferFromIds[i]);
+            expect(transferPlan[i].to.akahuId).to.equal(eb_e_r.expected.transferToIds[i]);
+            expect(transferPlan[i].from.akahuId).to.equal(eb_e_r.expected.transferFromIds[i]);
         }
 
     })
@@ -57,8 +57,8 @@ describe('buildTransferPlan', function() {
 
         for (let i = 0; i < transferPlan.length; ++i) {
             expect(transferPlan[i].amount).to.equal(bu_u_r.expected.transferAmounts[i]);
-            expect(transferPlan[i].to.id).to.equal(bu_u_r.expected.transferToIds[i]);
-            expect(transferPlan[i].from.id).to.equal(bu_u_r.expected.transferFromIds[i]);
+            expect(transferPlan[i].to.akahuId).to.equal(bu_u_r.expected.transferToIds[i]);
+            expect(transferPlan[i].from.akahuId).to.equal(bu_u_r.expected.transferFromIds[i]);
         }
 
     })

@@ -1,36 +1,40 @@
 const e_u_b_r = {
     accounts: [{
-        id: '001',
+        akahuId: '001',
+        company: 'ANZ',
         name: 'ANZ Checking',
         readableName: 'Personal checking',
-        kind: 'CHECKING',
+        type: 'CHECKING',
         tier: 1,
         current: 1350,
         min: 0,
         max: 1000
     }, {
-        id: '002',
+        akahuId: '002',
+        company: '',
         name: 'ANZ Checking',
         readableName: 'Joint checking',
-        kind: 'CHECKING',
+        type: 'CHECKING',
         tier: 2,
         current: 180,
         min: 500,
         max: 550
     }, {
-        id: '003',
+        akahuId: '003',
+        company: '',
         name: 'ANZ Savings',
         readableName: 'Personal savings',
-        kind: 'SAVINGS',
+        type: 'SAVINGS',
         tier: 3,
         current: 9000,
         min: 0,
         max: 10000
     }, {
-        id: '004',
+        akahuId: '004',
+        company: '',
         name: 'SimpliSaving',
         readableName: 'Kiwi saver',
-        kind: 'INVESTMENT',
+        type: 'INVESTMENT',
         tier: 3,
         current: 34643,
         min: 0
@@ -45,37 +49,41 @@ const e_u_b_r = {
 
 const b_u_b_r = {
     accounts: [{
-        id: '001',
+        akahuId: '001',
+        company: '',
         name: 'ANZ Checking',
         readableName: 'Personal checking',
-        kind: 'CHECKING',
+        type: 'CHECKING',
         tier: 1,
         current: 1250,
         min: 1000,
         max: 1500
     }, {
-        id: '002',
+        akahuId: '002',
+        company: '',
         name: 'ANZ Checking',
         readableName: 'Joint checking',
-        kind: 'CHECKING',
+        type: 'CHECKING',
         tier: 2,
         current: 180,
         min: 500,
         max: 550
     }, {
-        id: '003',
+        akahuId: '003',
+        company: '',
         name: 'ANZ Savings',
         readableName: 'Personal savings',
-        kind: 'SAVINGS',
+        type: 'SAVINGS',
         tier: 3,
         current: 9000,
         min: 8000,
         max: 10000
     }, {
-        id: '004',
+        akahuId: '004',
+        company: '',
         name: 'SimpliSaving',
         readableName: 'Kiwi saver',
-        kind: 'INVESTMENT',
+        type: 'INVESTMENT',
         tier: 3,
         current: 34643,
         min: 0
@@ -90,37 +98,41 @@ const b_u_b_r = {
 
 const eb_e_r = {
     accounts: [{
-        id: '001',
+        akahuId: '001',
+        company: '',
         name: 'ANZ Checking',
         readableName: 'Personal checking',
-        kind: 'CHECKING',
+        type: 'CHECKING',
         tier: 1,
         current: 1500,
         min: 1000,
         max: 1250
     }, {
-        id: '002',
+        akahuId: '002',
+        company: '',
         name: 'ANZ Checking',
         readableName: 'Joint checking',
-        kind: 'CHECKING',
+        type: 'CHECKING',
         tier: 1,
         current: 610,
         min: 500,
         max: 750
     }, {
-        id: '003',
+        akahuId: '003',
+        company: '',
         name: 'ANZ Savings',
         readableName: 'Personal savings',
-        kind: 'SAVINGS',
+        type: 'SAVINGS',
         tier: 2,
         current: 9000,
         min: 5000,
         max: 7500
     }, {
-        id: '004',
+        akahuId: '004',
+        company: '',
         name: 'SimpliSaving',
         readableName: 'Kiwi saver',
-        kind: 'INVESTMENT',
+        type: 'INVESTMENT',
         tier: 3,
         current: 34643,
         min: 0
@@ -135,37 +147,41 @@ const eb_e_r = {
 
 const bu_u_r = {
     accounts: [{
-        id: '001',
+        akahuId: '001',
+        company: '',
         name: 'ANZ Checking',
         readableName: 'Personal checking',
-        kind: 'CHECKING',
+        type: 'CHECKING',
         tier: 1,
         current: 1250,
         min: 1000,
         max: 1500
     }, {
-        id: '002',
+        akahuId: '002',
+        company: '',
         name: 'ANZ Checking',
         readableName: 'Joint checking',
-        kind: 'CHECKING',
+        type: 'CHECKING',
         tier: 1,
         current: 400,
         min: 500,
         max: 750
     }, {
-        id: '003',
+        akahuId: '003',
+        company: '',
         name: 'ANZ Savings',
         readableName: 'Personal savings',
-        kind: 'SAVINGS',
+        type: 'SAVINGS',
         tier: 2,
         current: 4300,
         min: 5000,
         max: 7500
     }, {
-        id: '004',
+        akahuId: '004',
+        company: '',
         name: 'SimpliSaving',
         readableName: 'Kiwi saver',
-        kind: 'INVESTMENT',
+        type: 'INVESTMENT',
         tier: 3,
         current: 34643,
         min: 0
