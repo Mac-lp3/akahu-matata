@@ -80,7 +80,7 @@ BASE_URL=https://api.akahu.io/v1/
 * ~~message txt generation to use new fields~~
 * ~~gen/test account names~~
 * ~~message sender impl~~
-* test for sender * dao
+* ~~test for sender & dao~~
 * main.ts
 * class-ify/refactor/rename
 * containerization
