@@ -36,6 +36,7 @@ export interface TransferDefinition {
 
 export interface TransferPlan {
     transfers: TransferDefinition[];
+    createdDate: string;
 }
 
 export interface Request {

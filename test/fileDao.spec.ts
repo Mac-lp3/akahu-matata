@@ -30,7 +30,8 @@ describe('the file dao', function() {
                 min: 0
             },
             amount: 12.42
-        }]
+        }],
+        createdDate: new Date().toISOString()
     };
 
     let user: User;

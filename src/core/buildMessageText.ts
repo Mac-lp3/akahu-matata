@@ -1,4 +1,4 @@
-import { AccountConfig, TransferDefinition, User } from '../types';
+import { AccountConfig, TransferPlan, User } from '../types';
 
 function applyTemplate(userData: User, fromToMap: Map<string, string>) {
 
@@ -49,7 +49,7 @@ function buildAccountName(account: AccountConfig) {
     return readableName
 }
 
-export function buildPlanSummary(transferPlan: TransferDefinition[], userData: User) {
+export function buildPlanSummary(transferPlan: TransferPlan, userData: User) {
 
     const transfersMap = new Map();
     const originalsMap = new Map();
@@ -57,7 +57,7 @@ export function buildPlanSummary(transferPlan: TransferDefinition[], userData: U
     let tmp: number = 0;
     let toName: string;
     let fromName: string;
-    transferPlan.forEach(transfer => {
+    transferPlan.transfers.forEach(transfer => {
 
         toName = buildAccountName(transfer.to);
         fromName = buildAccountName(transfer.from);

@@ -5,20 +5,14 @@ import {
     Request,
     RequestDirection,
     TransferDefinition,
+    TransferPlan,
     GeneralError 
 } from '../types';
 
-interface TransferConfig {
-    from: string;
-    to: string;
-    upOnly?: boolean;
-}
-
-export function buildTransferPlan(accounts: AccountConfig[]): TransferDefinition[] {
+export function buildTransferPlan(accounts: AccountConfig[]): TransferPlan {
 
     const holdings: AccountRequests = getAccountRequests(accounts);
 
-    // TODO this should call getAccountRequests
     let transfers: TransferDefinition[] = [];
 
     if (holdings.under.total > 0) {
@@ -50,8 +44,19 @@ export function buildTransferPlan(accounts: AccountConfig[]): TransferDefinition
         }
     }
 
-    return transfers;
+    const thePlan: TransferPlan = {
+        transfers: transfers,
+        createdDate: new Date().toISOString()
+    }
 
+    return thePlan;
+
+}
+
+interface TransferConfig {
+    from: string;
+    to: string;
+    upOnly?: boolean;
 }
 
 function createTransfers(accountRequests: AccountRequests, conf: TransferConfig): TransferDefinition[] {
