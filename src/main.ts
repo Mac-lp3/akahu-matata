@@ -1,5 +1,4 @@
-import { buildTransferPlan } from './core/buildPlan';
-import { buildPlanSummary } from './core/buildMessageText';
+import { buildTransferPlan, buildPlanSummary } from './core';
 import { ConsoleSender, FileDao, getAccountConfigs } from './io';
 
 const dao = new FileDao();

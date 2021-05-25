@@ -1,9 +1,8 @@
 import { expect } from 'chai';
 import { User } from '../src/types';
 import { FileDao } from '../src/io/fileDao';
-import { buildPlanSummary } from '../src/core/buildMessageText';
+import { buildPlanSummary, buildTransferPlan } from '../src/core';
 import { b_u_b_r, e_u_b_r, eb_e_r, bu_u_r } from './data/resolvable';
-import { buildTransferPlan } from '../src/core/buildPlan';
 
 describe('build text message for transfer plan', function() {
 

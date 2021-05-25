@@ -11,9 +11,3 @@ export interface AccountConfig {
     min: number;
     max?: number;
 }
-
-export enum AccountState {
-    UNDER = 'UNDER',
-    AT = 'AT' ,
-    OVER = 'OVER'
-}

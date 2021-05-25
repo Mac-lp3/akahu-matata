@@ -82,8 +82,8 @@ BASE_URL=https://api.akahu.io/v1/
 * ~~message sender impl~~
 * ~~test for sender & dao~~
 * ~~main.ts~~
-* test main
-* class-ify/refactor/rename
+* ~~test main~~
+* ~~class-ify/refactor/rename~~
 * containerization
 * documentation
 

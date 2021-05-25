@@ -1,19 +1,17 @@
 import { 
-    AccountRequests,
     HoldingClass,
     AccountConfig,
-    Request,
-    RequestDirection,
-    TransferDefinition,
+    TransferRequest,
+    Transfer,
     TransferPlan,
     GeneralError 
 } from '../types';
 
 export function buildTransferPlan(accounts: AccountConfig[]): TransferPlan {
 
-    const holdings: AccountRequests = getAccountRequests(accounts);
+    const holdings: AccountRequests = sortAccountsByState(accounts);
 
-    let transfers: TransferDefinition[] = [];
+    let transfers: Transfer[] = [];
 
     if (holdings.under.total > 0) {
 
@@ -54,17 +52,17 @@ export function buildTransferPlan(accounts: AccountConfig[]): TransferPlan {
 }
 
 interface TransferConfig {
-    from: string;
-    to: string;
+    from: HoldingClass;
+    to: HoldingClass;
     upOnly?: boolean;
 }
 
-function createTransfers(accountRequests: AccountRequests, conf: TransferConfig): TransferDefinition[] {
+function createTransfers(accountRequests: AccountRequests, conf: TransferConfig): Transfer[] {
 
-    const transferPairs: TransferDefinition[] = [];
+    const transferPairs: Transfer[] = [];
 
-    const to: Request[] = (accountRequests as any)[`${conf.to}`].requests;
-    const from: Request[] = (accountRequests as any)[`${conf.from}`].requests;
+    const to: TransferRequest[] = (accountRequests as any)[`${conf.to}`].requests;
+    const from: TransferRequest[] = (accountRequests as any)[`${conf.from}`].requests;
     let remainingTo: number = (accountRequests as any)[`${conf.to}`].total;
     let remainingFrom: number = (accountRequests as any)[`${conf.from}`].total;
 
@@ -121,33 +119,39 @@ function createTransfers(accountRequests: AccountRequests, conf: TransferConfig)
     return transferPairs;
 }
 
-function getAccountRequests(accounts: AccountConfig[]): AccountRequests {
+type AccountRequests = {
+    [key in HoldingClass]: {
+        requests: TransferRequest[];
+        total: number;
+    };
+}
+
+function sortAccountsByState(accounts: AccountConfig[]): AccountRequests {
 
     let totalUnder: number = 0;
-    const accountsUnder: Request[] = [];
+    const accountsUnder: TransferRequest[] = [];
 
     let totalBetween: number = 0;
-    const accountsBetween: Request[] = [];
+    const accountsBetween: TransferRequest[] = [];
 
     let totalExcess: number = 0;
-    const accountsExcess: Request[] = [];
+    const accountsExcess: TransferRequest[] = [];
 
     let totalReserve: number = 0;
-    const accountsReserve: Request[] = [];
+    const accountsReserve: TransferRequest[] = [];
 
     let tempAmount: number;
     accounts.forEach(curAcct => {
 
         // TODO where/how are errors handled?
 
-        switch(getHoldingClass(curAcct)) {
+        switch(getAccountState(curAcct)) {
 
             case HoldingClass.UNDER:
                 tempAmount = curAcct.min - curAcct.current;
                 accountsUnder.push({
                     account: curAcct,
-                    amount: tempAmount,
-                    direction: RequestDirection.IN
+                    amount: tempAmount
                 });
                 totalUnder += tempAmount;
                 break;
@@ -156,8 +160,7 @@ function getAccountRequests(accounts: AccountConfig[]): AccountRequests {
                 tempAmount = (curAcct.max || 0) - curAcct.current;
                 accountsBetween.push({
                     account: curAcct,
-                    amount: tempAmount,
-                    direction: RequestDirection.HOLD
+                    amount: tempAmount
                 });
                 totalBetween += tempAmount;
                 break;
@@ -166,8 +169,7 @@ function getAccountRequests(accounts: AccountConfig[]): AccountRequests {
                 tempAmount = curAcct.current - (curAcct.max || 0);
                 accountsExcess.push({
                     account: curAcct,
-                    amount: tempAmount,
-                    direction: RequestDirection.OUT
+                    amount: tempAmount
                 });
                 totalExcess += tempAmount;
                 break;
@@ -176,8 +178,7 @@ function getAccountRequests(accounts: AccountConfig[]): AccountRequests {
                 tempAmount = curAcct.current - (curAcct.max || 0);
                 accountsReserve.push({
                     account: curAcct,
-                    amount: tempAmount,
-                    direction: RequestDirection.HOLD
+                    amount: tempAmount
                 });
                 totalReserve += tempAmount;
                 break;
@@ -192,11 +193,11 @@ function getAccountRequests(accounts: AccountConfig[]): AccountRequests {
     } as AccountRequests;
 }
 
-function sortByTier(req1: Request, req2: Request) {
+function sortByTier(req1: TransferRequest, req2: TransferRequest) {
     return req1.account.tier - req2.account.tier;
 }
 
-function getHoldingClass(account: AccountConfig): HoldingClass {
+function getAccountState(account: AccountConfig): HoldingClass {
 
     // TODO handle exactly @ min/max
 

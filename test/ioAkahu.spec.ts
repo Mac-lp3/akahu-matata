@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { User } from '../src/types';
-import { FileDao } from '../src/io/fileDao';
-import { getAccountConfigs } from '../src/io/akahu';
+import { FileDao, getAccountConfigs } from '../src/io';
 
 describe('the akahu API callers', function() {
 

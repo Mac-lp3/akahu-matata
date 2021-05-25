@@ -1,6 +1,3 @@
-export interface UserInput {
-}
-
 export interface AccountLookUp {
     akahuId: string;
     company: string;

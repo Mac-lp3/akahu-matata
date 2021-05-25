@@ -1,5 +1,5 @@
 import { User } from './user';
-import { TransferPlan } from './transferPlan';
+import { TransferPlan } from './transfers';
 
 export interface Dao {
     getUser: (userId: string) => Promise<User>;

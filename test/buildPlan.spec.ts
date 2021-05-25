@@ -1,6 +1,6 @@
 import { expect } from 'chai';
+import { buildTransferPlan } from '../src/core';
 import { b_u_b_r, e_u_b_r, eb_e_r, bu_u_r } from './data/resolvable';
-import { buildTransferPlan } from '../src/core/buildPlan';
 
 describe('buildTransferPlan', function() {
     
