@@ -81,7 +81,7 @@ function buildAccountConfig(accountLookUp: AccountLookUp, rawAkahu: any): Accoun
             min: accountLookUp.min,
             name: rawAkahu.name,
             tier: accountLookUp.tier,
-            type: accountLookUp.type
+            type: rawAkahu.type
         };
     
         accountLookUp.hasOwnProperty('max') ? config['max'] = accountLookUp.max : false;

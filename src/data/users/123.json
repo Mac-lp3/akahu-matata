@@ -13,21 +13,18 @@
     },
     "accounts": [{
         "akahuId": "acc_ckowf6tae000008mi7uto05nu",
-        "type": "CHECKING",
         "nickName": "",
         "tier": 1,
         "min": 2500,
         "max": 7500
     }, {
         "akahuId": "acc_ckowf6tc5000308miaoguh7tt",
-        "type": "SAVINGS",
         "nickName": "Personal savings",
         "tier": 2,
         "min": 0,
         "max": 10000
     }, {
         "akahuId": "acc_ckowfn0di000009k08gysaept",
-        "type": "INVESTMENT",
         "nickName": "Investment",
         "tier": 3,
         "min": 0
