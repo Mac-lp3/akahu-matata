@@ -38,10 +38,10 @@ BASE_URL=https://api.akahu.io/v1/
   * Executed by the scheduer on EC2
   * Generates and stores the bank transfers required
   * Generates an SMS/email summary for user approval
-* SNS listener ()
+* SNS listener (tbd)
   * Listens for SMS/email approvals from users
   * Executes the plan executor
-* Plan executor
+* Plan executor (tbd)
   * Runs on EC2 and handles batches of approvals
   * Executes the transfers via Akahu API
   * Generates an SMS/email with the latest account balances
