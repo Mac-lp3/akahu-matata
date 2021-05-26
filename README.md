@@ -36,7 +36,7 @@ The app needs to know the IDs of the accounts you want to use.
 
 Update the `accounts` section in the `src/data/users/123.json` file.
 
-```json
+```
 {
   ...
   "accounts": [{
