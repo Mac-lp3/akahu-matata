@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { User } from '../src/types';
-import { FileDao, getAccountConfigs } from '../src/io';
+import { FileDao, getAccounts } from '../src/io';
 
 describe('the akahu API callers', function() {
 
@@ -13,7 +13,7 @@ describe('the akahu API callers', function() {
 
     it('uses look ups to get the right data', async function() {
         
-        const configs = await getAccountConfigs(user.accounts);
+        const configs = await getAccounts(user.accounts);
 
         expect(configs.length).to.equal(user.accounts.length);
         configs.forEach(con => {

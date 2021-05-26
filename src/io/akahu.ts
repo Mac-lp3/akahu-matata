@@ -16,7 +16,6 @@ const defaultHeaders: any = {
     'X-Akahu-ID': `${process.env.AKAHU_APP_TOKEN}`
 }
 
-// TODO return type
 async function retrieveAccountData(acctLookUp: AccountLookUp | AccountLookUp[]): Promise<any[]> {
 
     let returnData: any[] = [];
@@ -96,7 +95,7 @@ function buildAccountConfig(accountLookUp: AccountLookUp, rawAkahu: any): Accoun
     return config;
 }
 
-export async function getAccountConfigs(accountLookUps: AccountLookUp[]): Promise<AccountConfig[]> {
+export async function getAccounts(accountLookUps: AccountLookUp[]): Promise<AccountConfig[]> {
 
     const rawAccountData = await retrieveAccountData(accountLookUps);
 
@@ -109,6 +108,3 @@ export async function getAccountConfigs(accountLookUps: AccountLookUp[]): Promis
     return configs;
 }
 
-export class Akahu {
-    
-}

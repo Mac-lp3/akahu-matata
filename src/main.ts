@@ -1,15 +1,24 @@
+/**
+ * This process must be ready to handle hundreds of requests.
+ * 
+ * Thus, the userIds are fed in via readable stream (perhaps from S3 select or a Dynamo query).
+ * 
+ * With the userId, the application can look up the users preferences and account info, 
+ * generate a transfer plan, and send the text message.
+ * 
+ */
 import { buildTransferPlan, buildPlanSummary } from './core';
-import { ConsoleSender, FileDao, getAccountConfigs, MockInputStreamer } from './io';
+import { ConsoleSender, FileDao, getAccounts, MockInputStreamer } from './io';
 
 const dao = new FileDao();
 const sender = new ConsoleSender();
 const streamer = new MockInputStreamer();
 
-const batchSize = 1; // 
+const batchSize = 1; // change this in prod
 let batch: string[] = [];
 
 /**
- * set up the stream that will provide user IDs as input
+ * Set up the input stream
  */
 const inputStream = streamer.getInputStream();
 inputStream.on('data', async (data) => {
@@ -17,6 +26,7 @@ inputStream.on('data', async (data) => {
     inputStream.pause();
     batch.push(data);
 
+    // batch requests to prevent an explosion of API calls
     if (batch.length >= batchSize) {
         await main(batch);
         batch = [];
@@ -36,13 +46,14 @@ inputStream.on('finish', async function() {
 /**
  * The scheduled job.
  * 
- * loads the user's preferences. gets the latest account $. builds a transfer plan.
- * sends the text message. saves the plan for later.
+ * Loads the user's preferences.
+ * Gets the latest account $.
+ * Builds a transfer plan.
+ * Generates the message text.
+ * Sends the message.
+ * Saves the plan for later.
  */
  export async function main(processIds: string[]) {
-
-    // console.log(userId);
-    // const processIds: string[] = ['123'];
 
     console.log(`generating plans for ${processIds.length} user IDs...`);
 
@@ -51,7 +62,7 @@ inputStream.on('finish', async function() {
         processIds.map(async (userId) => {
 
             const userPrefs = await dao.getUser(userId);
-            const accounts = await getAccountConfigs(userPrefs.accounts);
+            const accounts = await getAccounts(userPrefs.accounts);
             const plan = buildTransferPlan(accounts);
 
             await Promise.all([
