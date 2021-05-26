@@ -75,11 +75,11 @@ function buildAccountConfig(accountLookUp: AccountLookUp, rawAkahu: any): Accoun
 
         config = {
             akahuId: accountLookUp.akahuId,
-            company: accountLookUp.company,
-            accountNumber: accountLookUp.accountNumber,
+            company: rawAkahu.connection.name,
+            accountNumber: rawAkahu.formatted_account,
             current: rawAkahu.balance.current,
             min: accountLookUp.min,
-            name: accountLookUp.name,
+            name: rawAkahu.name,
             tier: accountLookUp.tier,
             type: accountLookUp.type
         };

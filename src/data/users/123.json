@@ -13,9 +13,6 @@
     },
     "accounts": [{
         "akahuId": "acc_ckowf6tae000008mi7uto05nu",
-        "company": "ANZ",
-        "accountNumber": "01-0505-0858352-00",
-        "name": "Go",
         "type": "CHECKING",
         "nickName": "",
         "tier": 1,
@@ -23,9 +20,6 @@
         "max": 7500
     }, {
         "akahuId": "acc_ckowf6tc5000308miaoguh7tt",
-        "company": "ANZ",
-        "accountNumber": "01-0505-0858352-01",
-        "name": "Serious Saver",
         "type": "SAVINGS",
         "nickName": "Personal savings",
         "tier": 2,
@@ -33,9 +27,6 @@
         "max": 10000
     }, {
         "akahuId": "acc_ckowfn0di000009k08gysaept",
-        "company": "Simplicity KiwiSaver",
-        "accountNumber": "SIMF026328",
-        "name": "Growth Fund",
         "type": "INVESTMENT",
         "nickName": "Investment",
         "tier": 3,
