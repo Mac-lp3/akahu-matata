@@ -1,8 +1,37 @@
 import { buildTransferPlan, buildPlanSummary } from './core';
-import { ConsoleSender, FileDao, getAccountConfigs } from './io';
+import { ConsoleSender, FileDao, getAccountConfigs, MockInputStreamer } from './io';
 
 const dao = new FileDao();
 const sender = new ConsoleSender();
+const streamer = new MockInputStreamer();
+
+const batchSize = 1; // 
+let batch: string[] = [];
+
+/**
+ * set up the stream that will provide user IDs as input
+ */
+const inputStream = streamer.getInputStream();
+inputStream.on('data', async (data) => {
+
+    inputStream.pause();
+    batch.push(data);
+
+    if (batch.length >= batchSize) {
+        await main(batch);
+        batch = [];
+    }
+
+    inputStream.resume();
+});
+
+inputStream.on('finish', async function() {
+    console.log(`at the end`)
+    if (batch.length > 0) {
+        await main(batch);
+    }
+    console.log(`all user IDs have been processed`)
+})
 
 /**
  * The scheduled job.
@@ -10,11 +39,10 @@ const sender = new ConsoleSender();
  * loads the user's preferences. gets the latest account $. builds a transfer plan.
  * sends the text message. saves the plan for later.
  */
- export async function main() {
+ export async function main(processIds: string[]) {
 
-
-    // TODO this should be passed in
-    const processIds: string[] = ['123'];
+    // console.log(userId);
+    // const processIds: string[] = ['123'];
 
     console.log(`generating plans for ${processIds.length} user IDs...`);
 
@@ -33,11 +61,11 @@ const sender = new ConsoleSender();
 
         })
     );
+
+    console.log(`completed generating plans.`)
 }
 
 async function buildAndSendMessage(transferPlan: any, user: any) {
     const text = buildPlanSummary(transferPlan, user);
     sender.send(text);
 }
-
-(async () => { await main() })();
